@@ -58,7 +58,7 @@ router.post("/", async (req, res) => {
 
     const assignedTutor = tutorRows[0];
 
-    // 3. Store request in reservation table (message not saved in DB, only returned)
+    // 3. Store request in reservation table (status ASSIGNED)
     const [result] = await conn.query(
       `
       INSERT INTO reservation (
@@ -66,9 +66,10 @@ router.post("/", async (req, res) => {
         tutor_availability_id, 
         students_id, 
         subjects_id, 
-        tutors_id
+        tutors_id,
+        status
       )
-      VALUES (CURDATE(), NULL, ?, ?, ?)
+      VALUES (CURDATE(), NULL, ?, ?, ?, 'ASSIGNED')
       `,
       [student_id, subjectId, assignedTutor.id]
     );
@@ -99,6 +100,7 @@ router.get("/", async (req, res) => {
       SELECT 
         r.id AS request_id,
         r.reservation_date,
+        r.status,
         u_s.name AS student_name,
         u_s.last_name AS student_lastname,
         u_t.name AS tutor_name,
@@ -108,8 +110,8 @@ router.get("/", async (req, res) => {
       FROM reservation r
       JOIN students st ON st.id = r.students_id
       JOIN users u_s ON u_s.id = st.users_id
-      JOIN tutors t ON t.id = r.tutors_id
-      JOIN users u_t ON u_t.id = t.users_id
+      LEFT JOIN tutors t ON t.id = r.tutors_id
+      LEFT JOIN users u_t ON u_t.id = t.users_id
       JOIN subjects s ON s.id = r.subjects_id
       LEFT JOIN reviews rv ON rv.tutors_id = t.id
       GROUP BY r.id
@@ -120,6 +122,49 @@ router.get("/", async (req, res) => {
     conn.release();
 
     res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+/**
+ * Reject a class request (simple rejection)
+ * body: { tutor_id }
+ */
+router.post("/reject/:id", async (req, res) => {
+  const { id } = req.params; // reservation id
+  const { tutor_id } = req.body;
+
+  if (!tutor_id) {
+    return res.status(400).json({ error: "tutor_id is required" });
+  }
+
+  try {
+    const conn = await pool.getConnection();
+
+    // 1. Check if reservation belongs to this tutor
+    const [reservationRows] = await conn.query(
+      "SELECT * FROM reservation WHERE id = ? AND tutors_id = ? AND status = 'ASSIGNED'",
+      [id, tutor_id]
+    );
+
+    if (reservationRows.length === 0) {
+      conn.release();
+      return res.status(404).json({ message: "No active reservation found for this tutor" });
+    }
+
+    // 2. Update reservation -> mark as REJECTED and remove tutor
+    await conn.query(
+      "UPDATE reservation SET status = 'REJECTED', tutors_id = NULL WHERE id = ?",
+      [id]
+    );
+
+    conn.release();
+
+    res.json({
+      message: "Request rejected successfully. It is now available for other tutors."
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Database error" });
