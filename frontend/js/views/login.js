@@ -99,15 +99,41 @@ export function initLogin(navigate) {
     loginError.classList.add("is-hidden");
   });
 
-  loginForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!userType) {
-      loginError.classList.remove("is-hidden");
-      return;
+  loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  if (!userType) {
+    loginError.textContent = "Please select a role first";
+    loginError.classList.remove("is-hidden");
+    return;
+  }
+
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  try {
+    const response = await fetch("http://localhost:3000/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.message || "Login failed");
+
+    // Aquí validamos que el rol coincida con el botón seleccionado
+    if (data.role !== userType) {
+      throw new Error(`This user is registered as ${data.role}, not ${userType}`);
     }
-    const email = document.getElementById("loginEmail").value.trim();
-    // Fake authentication
-    auth.login({ role: userType, username: email || (userType === "tutor" ? "Tutor" : "Student") });
+
+    // Guardar info y redirigir
+    auth.login({ role: data.role, username: data.user.name });
     navigate("dashboard");
-  });
+
+  } catch (err) {
+    loginError.textContent = err.message;
+    loginError.classList.remove("is-hidden");
+  }
+});
 }
