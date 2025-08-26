@@ -96,6 +96,11 @@ body {
   margin-bottom: 1.25rem;
 }
 
+.logo {
+  height: 120px;
+  margin-bottom: 1rem;
+}
+
 .button.is-primary {
   height: 52px;
   background-color: var(--index-color);
@@ -138,6 +143,14 @@ body {
     height: 40%;
     font-size: 1.6rem;
   }
+}
+
+.has-background{
+  background-color: var(--primary-color);
+}
+
+.logo-nav{
+  height: 50px;
 }
 
 /* Tech cards */
@@ -191,6 +204,17 @@ body {
   background-color: var(--primary-color) !important;
   color: #fff;
   box-shadow: 0 6px 15px rgba(97, 126, 255, 0.35);
+}
+
+.register-login{
+  color: white;
+  background-color: var(--background-color);
+  border-radius: 5px;
+  padding: 2px;
+
+  &:hover {
+    color: var(--secondary-color);
+  }
 }
 
 .box.tutor-mode {

@@ -3,8 +3,9 @@ import { auth } from "../auth.js";
 export function dashboard(role, username) {
   return `
   <!-- Navbar -->
-  <nav class="navbar has-background-dark">
+  <nav class="navbar has-background">
     <div class="navbar-brand">
+    <img src="./assets/images/logo.png" alt="LearnPoint logo" class="logo-nav">
       <a class="navbar-item has-text-white" href="#" data-route="dashboard">
         <i class="fas fa-home"></i>&nbsp; Dashboard
       </a>
@@ -30,127 +31,28 @@ export function dashboard(role, username) {
       <!-- Tutor Dashboard -->
       <div id="dashboardTutor" class="${role === 'tutor' ? '' : 'hidden'}">
         <h2 class="title is-4">Tutor Dashboard</h2>
-        <!-- Analytics -->
-        <div class="columns">
-          <div class="column">
-            <div class="box has-text-centered">
-              <h2 class="subtitle">Classes taught</h2>
-              <p class="title">35</p>
-              <progress class="progress is-info" value="35" max="50"></progress>
-            </div>
-          </div>
-          <div class="column">
-            <div class="box has-text-centered">
-              <h2 class="subtitle">Total hours</h2>
-              <p class="title">120 h</p>
-              <progress class="progress is-success" value="120" max="200"></progress>
-            </div>
-          </div>
-          <div class="column">
-            <div class="box has-text-centered">
-              <h2 class="subtitle">Average rating</h2>
-              <p class="title">4.7/5</p>
-              <progress class="progress is-warning" value="4.7" max="5"></progress>
-            </div>
-          </div>
-        </div>
+        <div id="tutorAnalytics" class="columns"></div>
 
-        <!-- Schedule -->
         <h2 class="title is-4">Upcoming sessions</h2>
-        <div class="box">
-          <p><strong>Student:</strong> Anna Lopez</p>
-          <p><strong>Subject:</strong> JavaScript</p>
-          <p><strong>Time:</strong> Aug 25, 2025 - 3:00 pm</p>
-        </div>
-        <div class="box">
-          <p><strong>Student:</strong> John Torres</p>
-          <p><strong>Subject:</strong> SQL</p>
-          <p><strong>Time:</strong> Aug 26, 2025 - 5:00 pm</p>
-        </div>
+        <div id="tutorUpcoming"></div>
       </div>
 
       <!-- Student Dashboard -->
       <div id="dashboardStudent" class="${role === 'student' ? '' : 'hidden'}">
         <h2 class="title is-4">Student Dashboard</h2>
-
-        <!-- Filters -->
-        <div class="field is-grouped">
-          <div class="control">
-            <div class="select">
-              <select>
-                <option>Subject</option>
-                <option>JavaScript</option>
-                <option>Java</option>
-                <option>SQL</option>
-              </select>
-            </div>
-          </div>
-          <div class="control">
-            <input class="input" type="text" placeholder="Max price per hour">
-          </div>
-          <div class="control">
-            <button class="button is-link">Search</button>
-          </div>
-        </div>
-
-        <!-- Tutor list -->
-        <div class="columns is-multiline">
-          <div class="column is-one-quarter">
-            <div class="card">
-              <div class="card-image has-text-centered">
-                <figure class="image is-128x128 is-inline-block">
-                  <img class="is-rounded" src="https://via.placeholder.com/128" alt="Tutor">
-                </figure>
-              </div>
-              <div class="card-content has-text-centered">
-                <p class="title is-5">Carlos Gomez</p>
-                <p>Specialty: JavaScript</p>
-                <p><strong>$15/h</strong></p>
-                <button class="button is-primary is-small">View details</button>
-              </div>
-            </div>
-          </div>
-          <div class="column is-one-quarter">
-            <div class="card">
-              <div class="card-image has-text-centered">
-                <figure class="image is-128x128 is-inline-block">
-                  <img class="is-rounded" src="https://via.placeholder.com/128" alt="Tutor">
-                </figure>
-              </div>
-              <div class="card-content has-text-centered">
-                <p class="title is-5">Anna Lopez</p>
-                <p>Specialty: Java</p>
-                <p><strong>$18/h</strong></p>
-                <button class="button is-primary is-small">View details</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Scheduled classes -->
         <h2 class="title is-4">My scheduled classes</h2>
-        <div class="box">
-          <p><strong>Tutor:</strong> Carlos Gomez</p>
-          <p><strong>Subject:</strong> JavaScript</p>
-          <p><strong>Time:</strong> Aug 26, 2025 - 3:00 pm</p>
-        </div>
-        <div class="box">
-          <p><strong>Tutor:</strong> Anna Lopez</p>
-          <p><strong>Subject:</strong> Java</p>
-          <p><strong>Time:</strong> Aug 27, 2025 - 4:30 pm</p>
-        </div>
+        <div id="studentUpcoming"></div>
       </div>
     </div>
   </section>`;
 }
 
-// Inicialización de eventos del Dashboard
-export function initDashboard(navigate) {
+export async function initDashboard(navigate) {
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
-      auth.logout();        // Borra sesión
-      navigate("home");     // Redirige a Home
+      auth.logout();
+      navigate("home");
     });
   }
 
@@ -163,4 +65,61 @@ export function initDashboard(navigate) {
       navigate(route);
     });
   });
+
+  const role = localStorage.getItem("lp_role");
+  const userId = localStorage.getItem("lp_userId");
+
+  // Traer reservas de la BD
+  const res = await fetch("http://localhost:3000/reservations");
+  let reservations = await res.json();
+
+  // Filtrar según rol
+  if (role === "student") {
+    reservations = reservations.filter(r => r.students_id == userId);
+  } else if (role === "tutor") {
+    reservations = reservations.filter(r => r.tutors_id == userId);
+  }
+
+  // Ordenar por fecha
+  reservations.sort((a, b) => new Date(a.reservation_date + "T" + a.start_time) - new Date(b.reservation_date + "T" + b.start_time));
+
+  // Próximas 3
+  const nextSessions = reservations.slice(0, 3);
+
+  const renderSession = (r) => {
+    const start = new Date(`${r.reservation_date}T${r.start_time}`);
+    return `
+      <div class="box">
+        <p><strong>Student:</strong> ${r.student_name}</p>
+        <p><strong>Subject:</strong> ${r.subject_name}</p>
+        <p><strong>Time:</strong> ${start.toLocaleString()}</p>
+      </div>
+    `;
+  };
+
+  if (role === "tutor") {
+    // Analíticas
+    const totalClasses = reservations.length;
+    const totalHours = totalClasses * 2; // 2h cada clase
+    document.getElementById("tutorAnalytics").innerHTML = `
+      <div class="column">
+        <div class="box has-text-centered">
+          <h2 class="subtitle">Classes taught</h2>
+          <p class="title">${totalClasses}</p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="box has-text-centered">
+          <h2 class="subtitle">Total hours</h2>
+          <p class="title">${totalHours} h</p>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("tutorUpcoming").innerHTML =
+      nextSessions.map(renderSession).join("");
+  } else if (role === "student") {
+    document.getElementById("studentUpcoming").innerHTML =
+      nextSessions.map(renderSession).join("");
+  }
 }

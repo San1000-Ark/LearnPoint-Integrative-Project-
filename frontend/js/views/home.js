@@ -29,6 +29,7 @@ export default function home() {
   <section class="hero is-fullheight" id="home">
     <div class="hero-body has-text-centered">
       <div class="content-box">
+        <img src="./assets/images/logo.png" alt="LearnPoint logo" class="logo">
         <h1 class="title">Welcome to LearnPoint</h1>
         <h2 class="subtitle">Your space to learn and grow</h2>
         <a data-route="register" href="#/register" class="button is-primary">Get Started</a>

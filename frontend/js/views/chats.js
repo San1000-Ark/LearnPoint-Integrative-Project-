@@ -1,7 +1,8 @@
 export function chats() {
   return `
-  <nav class="navbar has-background-dark">
+  <nav class="navbar has-background">
     <div class="navbar-brand">
+    <img src="./assets/images/logo.png" alt="LearnPoint logo" class="logo-nav">
       <a class="navbar-item has-text-white" data-route="dashboard" href="#/dashboard">
         <i class="fas fa-home"></i>&nbsp; Dashboard
       </a>

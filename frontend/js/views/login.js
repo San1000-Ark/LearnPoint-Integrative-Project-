@@ -15,6 +15,7 @@ export function login() {
       <div class="columns is-centered">
         <div class="column is-5">
           <div class="box has-text-centered">
+          <img src="./assets/images/logo.png" alt="LearnPoint logo" class="logo">
             <h1 id="loginTitle" class="title has-text-centered mb-5">Welcome back</h1>
             <h4 id="loginSubtitle" class="subtitle has-text-centered mb-5">Select your role</h4>
 
@@ -55,7 +56,7 @@ export function login() {
 
                 <p class="has-text-centered mt-3">
                   Don’t have an account?
-                  <a data-route="register" href="#/register">Register</a>
+                  <a data-route="register" class="register-login" href="#/register">Register</a>
                 </p>
               </form>
             </div>
