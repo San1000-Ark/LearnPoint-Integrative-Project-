@@ -23,8 +23,8 @@ router.get('/:id',(req,res)=>{
 
 //POST create new user
 router.post('/',(req,res)=>{
-    const {full_name,age,email,password,registration_date}=req.body;
-    pool.query('INSERT INTO users (full_name,age,email,password,registration_date) VALUES (?,?,?,?,?)',[full_name,age,email,password,registration_date],(err,results)=>{
+const {name,last_name,age,email,password,registration_date}=req.body;
+    pool.query('INSERT INTO users (name,last_name,age,email,password,registration_date) VALUES (?,?,?,?,?)',[name,last_name,age,email,password,registration_date],(err,results)=>{
         if(err) return res.status(500).json({error: err.message});
         res.json({message:  "USER CREATED!"})
     })
@@ -33,8 +33,8 @@ router.post('/',(req,res)=>{
 //PUT update users
 router.put('/:id',(req,res)=>{
     const {id}=req.params;
-    const {full_name,age,email,password,registration_date}=req.body;
-    pool.query('UPDATE users SET full_name=?, age=?, email=?, password=?, registration_date=?',[full_name,age,email,password,registration_date,id],(err,results)=>{
+    const {name,last_name,age,email,password,registration_date}=req.body;
+    pool.query('UPDATE users SET name=?, last_name=?, age=?, email=?, password=?, registration_date=?',[name,last_name,age,email,password,registration_date,id],(err,results)=>{
         if(err) return res.status(500).json({err: err.message});
         if(results.affectedRows===0) return res.status(404).json({message: "USER NOT FOUND..."})
             res.json({message: "USER UPDATED"})
