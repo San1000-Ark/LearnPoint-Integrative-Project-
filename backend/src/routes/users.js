@@ -52,52 +52,59 @@ router.delete('/:id',(req,res)=>{
 })
 
 // POST login
-router.post('/login', (req, res) => {
-    const { email, password } = req.body;
+// LOGIN
+router.post("/login", (req, res) => {
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
+  const sql = `
+    SELECT u.id, u.name, u.last_name, u.email, u.password,
+           s.id AS studentId,
+           t.id AS tutorId
+    FROM users u
+    LEFT JOIN students s ON u.id = s.users_id
+    LEFT JOIN tutors t ON u.id = t.users_id
+    WHERE u.email = ? AND u.password = ?
+  `;
+
+  pool.query(sql, [email, password], (error, results) => {
+    if (error) {
+      return res.status(500).json({ error: error.message });
     }
 
-    const sql = "SELECT * FROM users WHERE email = ?";
-    pool.query(sql, [email], (error, results) => {
-        if (error) return res.status(500).json({ error: error.message });
-        if (results.length === 0) return res.status(401).json({ message: "User not found" });
+    if (results.length === 0) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
 
-        const user = results[0];
+    const user = results[0];
+    let role = null;
 
-        if (user.password !== password) {
-            return res.status(401).json({ message: "Invalid password" });
-        }
+    if (user.studentId) {
+      role = "student";
+    } else if (user.tutorId) {
+      role = "tutor";
+    }
 
-        // We verify if you are a tutor or a student
-        const userId = user.id;
+    if (!role) {
+      return res.status(403).json({ message: "User has no role assigned" });
+    }
 
-        const queryRole = `
-            SELECT 'student' as role FROM students WHERE users_id = ?
-            UNION
-            SELECT 'tutor' as role FROM tutors WHERE users_id = ?
-        `;
-
-        pool.query(queryRole, [userId, userId], (error, roleResults) => {
-            if (error) return res.status(500).json({ error: error.message });
-
-            if (roleResults.length === 0) {
-                return res.status(403).json({ message: "User has no role assigned" });
-            }
-
-            const role = roleResults[0].role;
-
-            // We do not send the password in the response.
-            delete user.password;
-
-            res.json({
-                message: "Login successful",
-                user,
-                role
-            });
-        });
+    // Login exitoso
+    res.json({
+      message: "Login successful",
+      role: role,
+      user: {
+        id: user.id,
+        name: user.name,
+        last_name: user.last_name,
+        email: user.email,
+        
+      },
     });
+  });
 });
 
 
