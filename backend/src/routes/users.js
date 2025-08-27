@@ -51,4 +51,53 @@ router.delete('/:id',(req,res)=>{
     })
 })
 
+// POST login
+router.post('/login', (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    const sql = "SELECT * FROM users WHERE email = ?";
+    pool.query(sql, [email], (error, results) => {
+        if (error) return res.status(500).json({ error: error.message });
+        if (results.length === 0) return res.status(401).json({ message: "User not found" });
+
+        const user = results[0];
+
+        if (user.password !== password) {
+            return res.status(401).json({ message: "Invalid password" });
+        }
+
+        // We verify if you are a tutor or a student
+        const userId = user.id;
+
+        const queryRole = `
+            SELECT 'student' as role FROM students WHERE users_id = ?
+            UNION
+            SELECT 'tutor' as role FROM tutors WHERE users_id = ?
+        `;
+
+        pool.query(queryRole, [userId, userId], (error, roleResults) => {
+            if (error) return res.status(500).json({ error: error.message });
+
+            if (roleResults.length === 0) {
+                return res.status(403).json({ message: "User has no role assigned" });
+            }
+
+            const role = roleResults[0].role;
+
+            // We do not send the password in the response.
+            delete user.password;
+
+            res.json({
+                message: "Login successful",
+                user,
+                role
+            });
+        });
+    });
+});
+
 export default router;
