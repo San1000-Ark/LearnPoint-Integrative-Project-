@@ -167,3 +167,4 @@ export function initChats(navigate) {
     if (e.key === "Enter") sendMessage();
   });
 }
+
