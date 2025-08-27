@@ -52,9 +52,7 @@ export function chats() {
 }
 
 export function initChats(navigate) {
-  // ---------------------
-  // 🔹 1. Logout
-  // ---------------------
+
   const lg = document.getElementById("logoutFromChats");
   if (lg) {
     lg.addEventListener("click", () => {
@@ -65,9 +63,7 @@ export function initChats(navigate) {
     });
   }
 
-  // ---------------------
-  // 🔹 2. Elementos del DOM
-  // ---------------------
+
   const contacts = document.getElementById("contacts");
   const messagesDiv = document.getElementById("messages");
   const input = document.getElementById("chatInput");
@@ -79,9 +75,7 @@ export function initChats(navigate) {
   const currentUserId = localStorage.getItem("lp_userId");
   const currentUsername = localStorage.getItem("lp_username") || "demoUser";
 
-  // ---------------------
-  // 🔹 3. Escuchar los chats del usuario actual
-  // ---------------------
+
   const q = query(
     collection(db, "chats"),
     where("participants", "array-contains", currentUserId)
@@ -105,9 +99,7 @@ export function initChats(navigate) {
     });
   });
 
-  // ---------------------
-  // 🔹 4. Abrir un chat
-  // ---------------------
+
   contacts.addEventListener("click", async (e) => {
     const article = e.target.closest("[data-id]");
     if (!article) return;
@@ -149,9 +141,7 @@ export function initChats(navigate) {
     });
   });
 
-  // ---------------------
-  // 🔹 5. Enviar un mensaje
-  // ---------------------
+
   async function sendMessage() {
     const msg = input.value.trim();
     if (!msg || !currentChatId) return;
@@ -162,7 +152,7 @@ export function initChats(navigate) {
       createdAt: serverTimestamp()
     });
 
-    // 🔹 actualizar preview en lista
+    // actualizar preview en lista
     const chatRef = doc(db, "chats", currentChatId);
     await updateDoc(chatRef, {
       lastMessage: msg,
@@ -177,3 +167,4 @@ export function initChats(navigate) {
     if (e.key === "Enter") sendMessage();
   });
 }
+
