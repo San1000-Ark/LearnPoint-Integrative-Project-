@@ -127,6 +127,10 @@ export function initLogin(navigate) {
       throw new Error(`This user is registered as ${data.role}, not ${userType}`);
     }
 
+    localStorage.setItem("lp_userId", data.user.id);     // ID real
+    localStorage.setItem("lp_username", data.user.name); // opcional
+    localStorage.setItem("lp_role", data.role);          // tutor/student
+
     // Guardar info y redirigir
     auth.login({ role: data.role, username: data.user.name });
     navigate("dashboard");
