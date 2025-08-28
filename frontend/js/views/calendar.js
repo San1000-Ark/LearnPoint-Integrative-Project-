@@ -1,11 +1,13 @@
 import { auth } from "../auth.js";
 
+// ======================
 // Vista del calendario
+// ======================
 export function calendar() {
   return `
   <nav class="navbar has-background">
     <div class="navbar-brand">
-    <img src="./assets/images/logo.png" alt="LearnPoint logo" class="logo-nav">
+      <img src="./assets/images/logo.png" alt="LearnPoint logo" class="logo-nav">
       <a class="navbar-item has-text-white" data-route="dashboard" href="#/dashboard">
         <i class="fas fa-home"></i>&nbsp; Dashboard
       </a>
@@ -30,95 +32,188 @@ export function calendar() {
     </div>
   </section>
 
-  <div id="calendar"></div>
+  <div id="calendar" class="calendar-full"></div>
+
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
   `;
 }
 
-// Inicialización del calendario
-export async function initCalendar(navigate) {
-  // Logout
-  const lg = document.getElementById("logoutFromCalendar");
-  if (lg) {
-    lg.addEventListener("click", () => {
-      auth.logout();
-      navigate("home");
-    });
-  }
+// ======================
+// Inicializar calendario con selección de rango y Jitsi
+// ======================
+export async function initCalendar(userId, role) {
+  const calendarEl = document.getElementById("calendar");
 
-  const el = document.getElementById("calendar");
-  if (!el || typeof FullCalendar === "undefined") return;
-
-  const role = localStorage.getItem("lp_role"); // "student" o "tutor"
-  const username = localStorage.getItem("lp_username");
-
-  // Cargar reservas desde el backend
-  const res = await fetch("http://localhost:3000/reservations");
-  let sessions = await res.json();
-
-  // Filtrar por rol
-  if (role === "student") {
-    sessions = sessions.filter(s => s.extendedProps.student === username);
-  } else if (role === "tutor") {
-    sessions = sessions.filter(s => s.extendedProps.tutor === username);
-  }
-
-  const calendar = new FullCalendar.Calendar(el, {
-    initialView: "dayGridMonth",
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: "timeGridWeek",
+    locale: "es",
+    headerToolbar: {
+      left: "prev,next today",
+      center: "title",
+      right: "dayGridMonth,timeGridWeek,timeGridDay",
+    },
     selectable: role === "tutor",
-    editable: false,
-    events: sessions,
+    editable: role === "tutor",
 
-    dateClick(info) {
+    // ======================
+    // Selección de rango de horas
+    // ======================
+    select: async (selectionInfo) => {
       if (role !== "tutor") return;
 
-      const student_id = prompt("Enter student ID:"); // usa IDs reales
-      const subject_id = prompt("Enter subject ID:");
-      if (student_id && subject_id) {
-        const jitsiRoom = "tutoring-" + Math.random().toString(36).substring(2, 10);
-        const jitsiLink = `https://meet.jit.si/${jitsiRoom}`;
+      const students = await fetchStudents();
+      const subjects = await fetchSubjects();
 
-        // Guardar en la BD
-        fetch("http://localhost:3000/reservations", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            reservation_date: info.dateStr,
-            start_time: "10:00:00", // puedes pedirlo en el prompt
-            tutor_id: username, // depende de cómo guardes los IDs
-            student_id,
-            subject_id
-          })
-        }).then(() => {
-          calendar.addEvent({
-            title: `Student ${student_id} - Subject ${subject_id}`,
-            start: `${info.dateStr}T10:00:00`,
-            extendedProps: { jitsi: jitsiLink }
-          });
-          alert(`Class scheduled!\nJitsi link: ${jitsiLink}`);
-        });
+      if (!students || !subjects) {
+        alert("Error al cargar estudiantes o materias.");
+        return;
+      }
+
+      const studentId = prompt(
+        "Selecciona un estudiante (ID):\n" +
+        students.map(s => `ID: ${s.id}, Nombre: ${s.name}`).join("\n")
+      );
+      if (!studentId) return;
+
+      const subjectId = prompt(
+        "Selecciona una materia (ID):\n" +
+        subjects.map(s => `ID: ${s.id}, Nombre: ${s.subject_name}`).join("\n")
+      );
+      if (!subjectId) return;
+
+      await createTutoria(selectionInfo.start, selectionInfo.end, studentId, subjectId);
+      calendar.refetchEvents();
+    },
+
+    // ======================
+    // Cargar eventos desde backend
+    // ======================
+    events: async (fetchInfo, successCallback, failureCallback) => {
+      try {
+        const res = await fetch("http://localhost:3000/calendar/events");
+        if (!res.ok) throw new Error("Error cargando eventos");
+        const data = await res.json();
+        successCallback(data);
+      } catch (err) {
+        console.error(err);
+        failureCallback(err);
       }
     },
 
-    eventClick(info) {
-      const jitsi = info.event.extendedProps?.jitsi;
-      if (jitsi) {
-        if (role === "tutor") {
-          if (confirm("Do you want to delete this session?")) {
-            fetch(`http://localhost:3000/reservations/${info.event.id}`, {
-              method: "DELETE"
-            }).then(() => {
-              info.event.remove();
-              alert("Session deleted!");
-            });
-          } else {
-            window.open(jitsi, "_blank", "noopener");
-          }
-        } else {
-          window.open(jitsi, "_blank", "noopener");
+    // ======================
+    // Mostrar link de Jitsi en cada evento
+    // ======================
+    eventContent: function(arg) {
+      const link = arg.event.extendedProps.jitsi_link;
+      return {
+        html: `<div>
+                 ${arg.event.title || "Tutoría"} <br>
+                 ${link ? `<a href="${link}" target="_blank">🖥️ Entrar a Jitsi</a>` : ""}
+               </div>`
+      };
+    },
+
+    // ======================
+    // Click en evento: eliminar
+    // ======================
+    eventClick: async (info) => {
+      if (role !== "tutor") return;
+      if (confirm("¿Eliminar tutoría?")) {
+        try {
+          await fetch(`http://localhost:3000/calendar/events/${info.event.id}`, {
+            method: "DELETE",
+          });
+          info.event.remove();
+        } catch (err) {
+          console.error("Error eliminando evento:", err);
         }
       }
-    }
+    },
   });
 
   calendar.render();
+
+  // ======================
+  // Crear tutoría con Jitsi
+  // ======================
+  async function createTutoria(start, end, studentId, subjectId) {
+    const jitsiLink = `https://meet.jit.si/tutoria-${Date.now()}`;
+
+    const body = {
+      start_datetime: start.toISOString().slice(0, 19).replace("T", " "),
+      end_datetime: end.toISOString().slice(0, 19).replace("T", " "),
+      tutors_id: userId,
+      students_id: Number(studentId),
+      subjects_id: Number(subjectId),
+      jitsi_link: jitsiLink
+    };
+
+    console.log("📤 Enviando body:", body);
+
+    try {
+      const res = await fetch("http://localhost:3000/calendar/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error creando tutoría:", errorData);
+        alert("Error creando tutoría ❌");
+      } else {
+        alert(`Tutoría creada ✅\nEnlace Jitsi: ${jitsiLink}`);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Error creando tutoría ❌");
+    }
+  }
+
+  // ======================
+  // Helpers fetch
+  // ======================
+  async function fetchStudents() {
+    try {
+      const res = await fetch("http://localhost:3000/users/role/students");
+      if (!res.ok) throw new Error("Error al obtener estudiantes");
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
+  async function fetchSubjects() {
+    try {
+      const res = await fetch("http://localhost:3000/subjects");
+      if (!res.ok) throw new Error("Error al obtener materias");
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+}
+
+// ======================
+// Cargar vista del calendario
+// ======================
+export function loadCalendarView() {
+  document.getElementById("main").innerHTML = calendar();
+
+  const user = auth.getUser();
+  if (!user) {
+    alert("Debes iniciar sesión primero.");
+    window.location.hash = "#/login";
+    return;
+  }
+
+  initCalendar(user.id, user.role);
+
+  document.getElementById("logoutFromCalendar")?.addEventListener("click", () => {
+    auth.clearUser();
+    window.location.hash = "#/login";
+  });
 }

@@ -62,22 +62,6 @@ export function initDashboardEffects() {
   }
 }
 
-// Calendar animations
-export function initCalendarEffects() {
-  if (document.querySelector("#calendar .calendar-header")) {
-    gsap.from("#calendar .calendar-header", { opacity: 0, y: -30, duration: 0.6, ease: "power3.out" });
-  }
-  if (document.querySelectorAll("#calendar .calendar-day")) {
-    gsap.from("#calendar .calendar-day", {
-      opacity: 0,
-      scale: 0.9,
-      duration: 0.5,
-      stagger: 0.05,
-      ease: "back.out(1.7)"
-    });
-  }
-}
-
 // Chats animations
 export function initChatsEffects() {
   if (document.querySelector("#chats .chat-list")) {

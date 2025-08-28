@@ -1,25 +1,42 @@
-// Simple auth helper for the SPA
-
-const KEY_ROLE = "lp_role";
-const KEY_USER = "lp_username";
-
 export const auth = {
-  isLoggedIn() {
-    return !!localStorage.getItem(KEY_ROLE);
+  user: null,
+
+  setUser(user) {
+    this.user = user;
+    localStorage.setItem("user", JSON.stringify(user));
   },
-  role() {
-    return localStorage.getItem(KEY_ROLE); // "tutor" | "student" | null
+
+  getUser() {
+    if (!this.user) {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        this.user = JSON.parse(storedUser);
+      } else {
+        // Intentar recuperar del localStorage individual (lo que guardó login.js)
+        const id = localStorage.getItem("lp_userId");
+        const username = localStorage.getItem("lp_username");
+        const role = localStorage.getItem("lp_role");
+        if (id && role) {
+          this.user = { id, username, role };
+        }
+      }
+    }
+    return this.user;
   },
-  username() {
-    return localStorage.getItem(KEY_USER);
+
+  clearUser() {
+    this.user = null;
+    localStorage.removeItem("user");
+    localStorage.removeItem("lp_userId");
+    localStorage.removeItem("lp_username");
+    localStorage.removeItem("lp_role");
   },
-  login({ role, username }) {
-    if (!role) throw new Error("Role is required to login");
-    localStorage.setItem(KEY_ROLE, role);
-    localStorage.setItem(KEY_USER, username || (role === "tutor" ? "Tutor" : "Student"));
+
+  isAuthenticated() {
+    return !!this.getUser();
   },
-  logout() {
-    localStorage.removeItem(KEY_ROLE);
-    localStorage.removeItem(KEY_USER);
+
+  login(user) {
+    this.setUser(user);
   }
 };

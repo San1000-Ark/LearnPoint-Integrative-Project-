@@ -133,7 +133,7 @@ export function initLogin(navigate) {
     localStorage.setItem("lp_role", data.role);          // tutor/student
 
     // Guardar info y redirigir
-    auth.login({ role: data.role, username: data.user.name });
+    auth.login({ id: data.user.id, role: data.role, username: data.user.name });
     navigate("dashboard");
 
   } catch (err) {
