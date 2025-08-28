@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
       JOIN subjects sub ON r.subject_id = sub.id
     `);
 
-    const events = rows.map(r => ({
+    const reservation = rows.map(r => ({
       id: r.id,
       title: `${r.student} - ${r.subject}`,
       start: `${r.reservation_date}T${r.start_time}`,
@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
       }
     }));
 
-    res.json(events);
+    res.json(reservation);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error fetching reservations" });

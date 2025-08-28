@@ -22,12 +22,12 @@ export function register() {
           <form id="registerForm">
             <div class="field">
               <label class="label">First Name</label>
-              <div class="control"><input class="input" type="text" id="firstName" placeholder="Enter your first name" required /></div>
+              <div class="control"><input class="input" type="text" id="name" placeholder="Enter your first name" required /></div>
             </div>
 
             <div class="field">
               <label class="label">Last Name</label>
-              <div class="control"><input class="input" type="text" id="lastName" placeholder="Enter your last name" required /></div>
+              <div class="control"><input class="input" type="text" id="last_name" placeholder="Enter your last name" required /></div>
             </div>
 
             <div class="field">
@@ -153,24 +153,24 @@ export function initRegister(navigate) {
     registerBtn.className = "button is-danger is-fullwidth";
   });
 
-  registerForm.addEventListener("submit", (e) => {
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     // Basic required fields always present
-    const firstName = document.getElementById("firstName").value.trim();
-    const lastName  = document.getElementById("lastName").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const last_name  = document.getElementById("last_name").value.trim();
     const age       = document.getElementById("age").value.trim();
     const email     = document.getElementById("email").value.trim();
     const password  = document.getElementById("password").value.trim();
 
-    if (!firstName || !lastName || !age || !email || !password) {
+    if (!name || !last_name || !age || !email || !password) {
       showError("registerError", "Please complete all required fields.");
       return;
     }
 
     let profile = {
       mode,
-      firstName, lastName, age, email
+      name, last_name, age, email
     };
 
     if (mode === "tutor") {
@@ -205,13 +205,25 @@ export function initRegister(navigate) {
       };
     }
 
-    // Save minimal info to localStorage (simulate registration)
-    localStorage.setItem("lp_pref_role", mode);
-    localStorage.setItem("lp_register_profile", JSON.stringify(profile));
+    
 
-    // Go to login
-    navigate("login");
-  });
+  try {
+    const res = await fetch("http://localhost:3000/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profile)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert("Usuario registrado correctamente");
+      navigate("login");
+    } else {
+      showError("registerError", data.message || "Error al registrar usuario.");
+    }
+  } catch (err) {
+    showError("registerError", "Error de conexión con el servidor.");
+  }
+});
 
   function showError(id, msg) {
     const el = document.getElementById(id);

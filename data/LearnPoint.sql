@@ -37,7 +37,14 @@ FOREIGN KEY (tutors_id) REFERENCES tutors(id),
 date_availability DATE,
 time_availability TIME);
 
-ALTER TABLE tutor_availability ADD COLUMN days_avaibility ENUM('Mon','Tue','Wed','Thu','Fri','Sat','Sun');
+ALTER TABLE tutor_availability DROP COLUMN date_availability;
+ALTER TABLE tutor_availability DROP COLUMN time_availability;
+ALTER TABLE tutor_availability ADD COLUMN start_availability TIME;
+ALTER TABLE tutor_availability ADD COLUMN end_availability TIME;
+
+DROP TABLE tutor_availability;
+
+ALTER TABLE tutor_availability ADD COLUMN days_availability ENUM('Mon','Tue','Wed','Thu','Fri','Sat','Sun');
 
 CREATE TABLE subjects(
 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -76,6 +83,9 @@ subjects_id INT,
 FOREIGN KEY (subjects_id) REFERENCES subjects(id),
 FOREIGN KEY (tutors_id) REFERENCES tutors(id)
 );
+
+ALTER TABLE reservation 
+ADD COLUMN status ENUM('PENDING','ASSIGNED','REJECTED') DEFAULT 'PENDING';
 
 CREATE TABLE reviews(
 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -117,3 +127,5 @@ GROUP BY
     t.id
 ORDER BY 
     prom_ranking DESC;
+
+ALTER TABLE tutor_availability DROP COLUMN days_avaibility;

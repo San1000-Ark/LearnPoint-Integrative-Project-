@@ -4,7 +4,7 @@ import pool from "../config/db.js";
 const router = express.Router();
 
 /**
- * Create class request
+ * 1. Create class request
  * body: { student_id, skill, message (optional) }
  */
 router.post("/", async (req, res) => {
@@ -58,7 +58,7 @@ router.post("/", async (req, res) => {
 
     const assignedTutor = tutorRows[0];
 
-    // 3. Store request in reservation table (message not saved in DB, only returned)
+    // 3. Store request in reservation table
     const [result] = await conn.query(
       `
       INSERT INTO reservation (
@@ -66,9 +66,10 @@ router.post("/", async (req, res) => {
         tutor_availability_id, 
         students_id, 
         subjects_id, 
-        tutors_id
+        tutors_id,
+        status
       )
-      VALUES (CURDATE(), NULL, ?, ?, ?)
+      VALUES (CURDATE(), NULL, ?, ?, ?, 'ASSIGNED')
       `,
       [student_id, subjectId, assignedTutor.id]
     );
@@ -79,7 +80,8 @@ router.post("/", async (req, res) => {
       message: "Class request created successfully",
       requestId: result.insertId,
       assignedTutor,
-      studentMessage: message || "No message provided (not stored in DB)"
+      status: "ASSIGNED",
+      studentMessage: message || "No message provided (not stored in DB)",
     });
   } catch (error) {
     console.error(error);
@@ -88,41 +90,90 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * Get all class requests with details
+ * 2. Reject a request by tutor (Simple rejection + auto-reassign)
  */
-router.get("/", async (req, res) => {
+router.patch("/:id/reject", async (req, res) => {
+  const { id } = req.params; // reservation id
+  const { tutorId } = req.body; // tutor rejecting the request
+
   try {
     const conn = await pool.getConnection();
 
+    // 1. Get the reservation
     const [rows] = await conn.query(
-      `
-      SELECT 
-        r.id AS request_id,
-        r.reservation_date,
-        u_s.name AS student_name,
-        u_s.last_name AS student_lastname,
-        u_t.name AS tutor_name,
-        u_t.last_name AS tutor_lastname,
-        s.subject_name,
-        IFNULL(AVG(rv.ranking), 0) as tutor_avg_rating
-      FROM reservation r
-      JOIN students st ON st.id = r.students_id
-      JOIN users u_s ON u_s.id = st.users_id
-      JOIN tutors t ON t.id = r.tutors_id
-      JOIN users u_t ON u_t.id = t.users_id
-      JOIN subjects s ON s.id = r.subjects_id
-      LEFT JOIN reviews rv ON rv.tutors_id = t.id
-      GROUP BY r.id
-      ORDER BY r.reservation_date DESC
-      `
+      "SELECT * FROM reservation WHERE id = ?",
+      [id]
     );
+
+    if (rows.length === 0) {
+      conn.release();
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+
+    const reservation = rows[0];
+
+    // 2. Verify tutor is the one assigned
+    if (reservation.tutors_id !== Number(tutorId)) {
+      conn.release();
+      return res
+        .status(403)
+        .json({ message: "Not authorized to reject this request" });
+    }
+
+    // 3. Free the request (mark REJECTED)
+    await conn.query(
+      "UPDATE reservation SET tutors_id = NULL, status = 'REJECTED' WHERE id = ?",
+      [id]
+    );
+
+    // 4. Try to auto-assign another tutor
+    const [tutorRows] = await conn.query(
+      `
+      SELECT t.id, u.name, u.last_name, IFNULL(AVG(r.ranking), 0) as avg_rating
+      FROM tutors t
+      JOIN users u ON u.id = t.users_id
+      JOIN subjects s ON s.tutors_id = t.id
+      LEFT JOIN reviews r ON r.tutors_id = t.id
+      WHERE s.id = ?
+        AND t.is_verified = 'TRUE'
+        AND t.mode_tutoring = 'AVAILABLE'
+        AND t.id <> ?
+      GROUP BY t.id
+      HAVING avg_rating >= 3.5
+      ORDER BY avg_rating DESC
+      LIMIT 1
+      `,
+      [reservation.subjects_id, tutorId]
+    );
+
+    if (tutorRows.length > 0) {
+      const newTutor = tutorRows[0];
+      await conn.query(
+        "UPDATE reservation SET tutors_id = ?, status = 'ASSIGNED' WHERE id = ?",
+        [newTutor.id, id]
+      );
+
+      conn.release();
+      return res.json({
+        message: "Request rejected and reassigned automatically.",
+        reservationId: id,
+        newTutor,
+        status: "ASSIGNED",
+      });
+    }
 
     conn.release();
 
-    res.json(rows);
+    // No tutors available → stays in REJECTED
+    res.json({
+      message:
+        "Request rejected. No new tutor available, it remains REJECTED for now.",
+      reservationId: id,
+      status: "REJECTED",
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 

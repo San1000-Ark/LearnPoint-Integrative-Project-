@@ -1,3 +1,9 @@
+import { db } from "./firebaseConfig.js";
+import { 
+  collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, 
+  doc, setDoc, getDoc, updateDoc, where 
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
 export function chats() {
   return `
   <nav class="navbar has-background">
@@ -23,34 +29,12 @@ export function chats() {
   <div class="chat-container">
     <!-- CONTACTS -->
     <aside class="contacts" id="contacts">
-      ${[
-        { name: "Anna Lopez", role: "JavaScript Tutor", img: 5 },
-        { name: "John Torres", role: "SQL Tutor", img: 6 },
-        { name: "Maria Perez", role: "Python Tutor", img: 7 },
-      ].map(c => `
-        <article class="media" data-contact="${c.name}">
-          <figure class="media-left">
-            <p class="image is-48x48">
-              <img src="https://i.pravatar.cc/48?img=${c.img}" alt="${c.name}">
-            </p>
-          </figure>
-          <div class="media-content">
-            <p><strong>${c.name}</strong><br><small>${c.role}</small></p>
-          </div>
-        </article>
-      `).join("")}
+      <!-- Firebase inyectará los contactos aquí -->
     </aside>
 
     <!-- CHAT BOX -->
     <section class="chat-box">
-      <div class="messages" id="messages">
-        <div class="message is-received">
-          <p><strong>Anna:</strong> Hi! Are we ready for the class tomorrow?</p>
-        </div>
-        <div class="message is-sent">
-          <p>Yes, I’ll be online at 5 PM.</p>
-        </div>
-      </div>
+      <div class="messages" id="messages"></div>
       <div class="chat-input">
         <div class="field has-addons">
           <div class="control is-expanded">
@@ -69,41 +53,114 @@ export function chats() {
 }
 
 export function initChats(navigate) {
-  // Logout
+
   const lg = document.getElementById("logoutFromChats");
   if (lg) {
     lg.addEventListener("click", () => {
       localStorage.removeItem("lp_role");
       localStorage.removeItem("lp_username");
+      localStorage.removeItem("lp_userId");
       navigate("home");
     });
   }
 
-  // Open chat for selected contact
+
   const contacts = document.getElementById("contacts");
-  const messages = document.getElementById("messages");
+  const messagesDiv = document.getElementById("messages");
   const input = document.getElementById("chatInput");
   const sendBtn = document.getElementById("sendBtn");
 
-  contacts.addEventListener("click", (e) => {
-    const article = e.target.closest("[data-contact]");
-    if (!article) return;
-    const name = article.getAttribute("data-contact");
-    messages.innerHTML = `
-      <div class="message is-received">
-        <p><strong>${name}:</strong> Hello! This is the beginning of our chat.</p>
-      </div>
-    `;
+  let currentChatId = null;
+  let unsubscribe = null; // para dejar de escuchar cuando cambias de chat
+
+  const currentUserId = localStorage.getItem("lp_userId");
+  const currentUsername = localStorage.getItem("lp_username") || "demoUser";
+
+
+  const q = query(
+    collection(db, "chats"),
+    where("participants", "array-contains", currentUserId)
+  );
+
+  onSnapshot(q, (snapshot) => {
+    contacts.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const chat = docSnap.data();
+      const otherUser = chat.participants.find(p => p !== currentUserId);
+      const div = document.createElement("article");
+      div.className = "media";
+      div.setAttribute("data-id", otherUser);
+      div.setAttribute("data-name", otherUser);
+      div.innerHTML = `
+        <div class="media-content">
+          <p><strong>${otherUser}</strong><br><small>${chat.lastMessage || ""}</small></p>
+        </div>
+      `;
+      contacts.appendChild(div);
+    });
   });
 
-  function sendMessage() {
+
+  contacts.addEventListener("click", async (e) => {
+    const article = e.target.closest("[data-id]");
+    if (!article) return;
+
+    const contactId = article.getAttribute("data-id");
+    const contactName = article.getAttribute("data-name");
+
+    // Generar chatId único
+    currentChatId = [currentUserId, contactId].sort().join("_");
+
+    // Crear el documento del chat si no existe
+    const chatRef = doc(db, "chats", currentChatId);
+    const chatSnap = await getDoc(chatRef);
+    if (!chatSnap.exists()) {
+      await setDoc(chatRef, {
+        participants: [currentUserId, contactId],
+        createdAt: serverTimestamp()
+      });
+    }
+
+    // Limpiar mensajes
+    messagesDiv.innerHTML = `<p><em>Chat con ${contactName}</em></p>`;
+
+    // Dejar de escuchar el chat anterior si existía
+    if (unsubscribe) unsubscribe();
+
+    // Suscribirse a los mensajes de este chat
+    const q = query(collection(db, `chats/${currentChatId}/messages`), orderBy("createdAt", "asc"));
+    unsubscribe = onSnapshot(q, (snapshot) => {
+      messagesDiv.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const msg = doc.data();
+        const div = document.createElement("div");
+        div.className = msg.sender === currentUserId ? "message is-sent" : "message is-received";
+        div.innerHTML = `<p><strong>${msg.sender}:</strong> ${msg.text}</p>`;
+        messagesDiv.appendChild(div);
+      });
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+  });
+
+
+  async function sendMessage() {
     const msg = input.value.trim();
-    if (!msg) return;
-    messages.innerHTML += `
-      <div class="message is-sent"><p>${msg}</p></div>
-    `;
+    if (!msg || !currentChatId) return;
+
+    await addDoc(collection(db, `chats/${currentChatId}/messages`), {
+      sender: currentUserId,
+      text: msg,
+      createdAt: serverTimestamp()
+    });
+
+    // actualizar preview en lista
+    const chatRef = doc(db, "chats", currentChatId);
+    await updateDoc(chatRef, {
+      lastMessage: msg,
+      updatedAt: serverTimestamp()
+    });
+
     input.value = "";
-    messages.scrollTop = messages.scrollHeight;
   }
 
   sendBtn.addEventListener("click", sendMessage);
@@ -111,3 +168,4 @@ export function initChats(navigate) {
     if (e.key === "Enter") sendMessage();
   });
 }
+
