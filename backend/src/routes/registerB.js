@@ -7,12 +7,12 @@ const router = express.Router();
 router.post('/registerStudent', (req, res) => {
     const { name, last_name, age, email, password } = req.body;
 
-    // Validar campos obligatorios
+    // Validate required fields
     if (!name || !last_name || !age || !email || !password) {
         return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Validar si el email ya existe
+    // Validate if the email already exists
     pool.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
         if (err) {
             console.error("Error during SELECT query:", err);
@@ -22,7 +22,7 @@ router.post('/registerStudent', (req, res) => {
             return res.status(400).json({ error: "The email already exists" });
         }
 
-        // Insertar en la tabla users
+        // Insert into the users table
         pool.query('INSERT INTO users (name, last_name, age, email, password) VALUES (?, ?, ?, ?, ?)',
         [name, last_name, age, email, password], (err, userResult) => {
             if (err) {
@@ -32,7 +32,7 @@ router.post('/registerStudent', (req, res) => {
 
             const userId = userResult.insertId;
 
-            // Insertar en la tabla students
+            // Insert into the students table
             pool.query('INSERT INTO students (users_id) VALUES (?)', [userId], (err, studentResult) => {
                 if (err) {
                     console.error("Error during INSERT into students:", err);
