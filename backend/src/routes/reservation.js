@@ -3,11 +3,11 @@ import pool from '../config/db.js';
 
 const router=express.Router();
 
-router.post("/reservation", async (req, res) => {
+router.post("/reservation",(req, res) => {
   try {
     const { reservation_date, tutor_availability_id, tutors_id, students_id, subjects_id } = req.body;
 
-    const [result] = await pool.query(
+    const [result] =pool.query(
       `INSERT INTO reservation (reservation_date, tutor_availability_id, tutors_id, students_id, subjects_id) 
       VALUES (?, ?, ?, ?, ?)`, [reservation_date, tutor_availability_id, tutors_id, students_id, subjects_id]
     );

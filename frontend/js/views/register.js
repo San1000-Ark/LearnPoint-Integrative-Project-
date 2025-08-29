@@ -155,13 +155,14 @@ export function initRegister(navigate) {
 
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-
+    
+    try{
     // Basic required fields always present
     const name = document.getElementById("name").value.trim();
-    const last_name  = document.getElementById("last_name").value.trim();
-    const age       = document.getElementById("age").value.trim();
-    const email     = document.getElementById("email").value.trim();
-    const password  = document.getElementById("password").value.trim();
+    const last_name = document.getElementById("last_name").value.trim();
+    const age = document.getElementById("age").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
     if (!name || !last_name || !age || !email || !password) {
       showError("registerError", "Please complete all required fields.");
@@ -170,15 +171,15 @@ export function initRegister(navigate) {
 
     let profile = {
       mode,
-      name, last_name, age, email
+      name, last_name, age, email, password
     };
 
     if (mode === "tutor") {
-      const hourPrice   = document.getElementById("hourPrice").value.trim();
+      const hourPrice = document.getElementById("hourPrice").value.trim();
       const description = document.getElementById("description").value.trim();
-      const subjects    = document.getElementById("subjects").value.trim();
-      const timeFrom    = document.getElementById("timeFrom").value;
-      const timeTo      = document.getElementById("timeTo").value;
+      const subjects = document.getElementById("subjects").value.trim();
+      const timeFrom = document.getElementById("timeFrom").value;
+      const timeTo = document.getElementById("timeTo").value;
       const days = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(d => d.value);
 
       // Validate availability
@@ -205,10 +206,11 @@ export function initRegister(navigate) {
       };
     }
 
-    
+    const url = mode === "tutor"
+      ? "http://localhost:3000/registerB/registerTutor"
+      : "http://localhost:3000/registerB/registerStudent";
 
-  try {
-    const res = await fetch("http://localhost:3000/users", {
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(profile)
@@ -221,15 +223,15 @@ export function initRegister(navigate) {
       showError("registerError", data.message || "Error al registrar usuario.");
     }
   } catch (err) {
-    showError("registerError", "Error de conexión con el servidor.");
+    showError("registerError", "Error de conexión con el servidor.".err);
   }
 });
 
-  function showError(id, msg) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = msg;
-    el.classList.remove("is-hidden");
-    setTimeout(() => el.classList.add("is-hidden"), 4000);
-  }
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.remove("is-hidden");
+  setTimeout(() => el.classList.add("is-hidden"), 4000);
+}
 }
