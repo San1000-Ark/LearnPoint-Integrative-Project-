@@ -169,26 +169,30 @@ export function initRegister(navigate) {
     }
 
     let profile = {
-      mode,
-      name, last_name, age, email, password
+      name,
+      last_name,
+      age,
+      email,
+      password
     };
 
     if (mode === "tutor") {
-      const hourPrice   = document.getElementById("hourPrice").value.trim();
-      const description = document.getElementById("description").value.trim();
-      const subjects    = document.getElementById("subjects").value.trim();
-      const timeFrom    = document.getElementById("timeFrom").value;
-      const timeTo      = document.getElementById("timeTo").value;
-      const days = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(d => d.value);
+      const hour_price   = document.getElementById("hourPrice").value.trim();
+      const description  = document.getElementById("description").value.trim();
+      const subjects     = document.getElementById("subjects").value.trim().split(",").map(s => s.trim()).filter(Boolean);
+      const from         = document.getElementById("timeFrom").value;
+      const to           = document.getElementById("timeTo").value;
+      const working_days_arr = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(d => d.value);
+      const mode_tutoring = "online"; 
 
-      // Validate availability
+      // Availability validation
       availabilityError.classList.add("is-hidden");
-      if (days.length === 0) {
+      if (working_days_arr.length === 0) {
         availabilityError.textContent = "Please select at least one working day.";
         availabilityError.classList.remove("is-hidden");
         return;
       }
-      if (!timeFrom || !timeTo || timeFrom >= timeTo) {
+      if (!from || !to || from >= to) {
         availabilityError.textContent = "Please provide a valid time range (From must be earlier than To).";
         availabilityError.classList.remove("is-hidden");
         return;
@@ -196,32 +200,43 @@ export function initRegister(navigate) {
 
       profile = {
         ...profile,
-        hourPrice: hourPrice ? Number(hourPrice) : null,
+        hour_price: hour_price ? Number(hour_price) : null,
         description,
-        subjects: subjects ? subjects.split(",").map(s => s.trim()).filter(Boolean) : [],
-        availability: {
-          days, timeFrom, timeTo
-        }
+        subjects,
+        working_days: working_days_arr.join(","),
+        from,
+        to,
+        mode_tutoring
       };
     }
 
     
 
   try {
-    const res = await fetch("http://localhost:3000/registerB/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(profile)
-    });
-    const data = await res.json();
+    let res, data;
+    if (mode === "tutor") {
+      res = await fetch("http://localhost:3000/registerB/registerTutor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profile)
+      });
+      data = await res.json();
+    } else {
+      res = await fetch("http://localhost:3000/registerB/registerStudent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profile)
+      });
+      data = await res.json();
+    }
     if (res.ok) {
       alert("Usuario registrado correctamente");
       navigate("login");
     } else {
-      showError("registerError", data.message || "Error al registrar usuario.");
+      showError("registerError", data.error || data.message || "Error al registrar usuario.");
     }
   } catch (err) {
-    showError("registerError", "Error de conexión con el servidor.". err);
+    showError("registerError", "Error de conexión con el servidor.");
   }
 });
 

@@ -3,6 +3,48 @@ import pool from '../config/db.js'; // config of database connection
 import { Router } from 'express';
 
 const router = express.Router();
+// register Student
+router.post('/registerStudent', (req, res) => {
+    const { name, last_name, age, email, password } = req.body;
+
+    // Validate required fields
+    if (!name || !last_name || !age || !email || !password) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Validate if the email already exists
+    pool.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+        if (err) {
+            console.error("Error during SELECT query:", err);
+            return res.status(500).json({ error: "Server error" });
+        }
+        if (results.length > 0) {
+            return res.status(400).json({ error: "The email already exists" });
+        }
+
+        // Insert into the users table
+        pool.query('INSERT INTO users (name, last_name, age, email, password) VALUES (?, ?, ?, ?, ?)',
+        [name, last_name, age, email, password], (err, userResult) => {
+            if (err) {
+                console.error("Error during INSERT into users:", err);
+                return res.status(500).json({ error: "Server error" });
+            }
+
+            const userId = userResult.insertId;
+
+            // Insert into the students table
+            pool.query('INSERT INTO students (users_id) VALUES (?)', [userId], (err, studentResult) => {
+                if (err) {
+                    console.error("Error during INSERT into students:", err);
+                    return res.status(500).json({ error: "Server error" });
+                }
+
+                res.status(201).json({ message: "Student registered successfully" });
+            });
+        });
+    });
+});
+
 
 // register Tutor
 router.post('/registerTutor', (req, res) => {
@@ -46,7 +88,7 @@ router.post('/registerTutor', (req, res) => {
 
                 // Insert availability tutors
                 pool.query('INSERT INTO tutor_availability (tutors_id, days_availability, start_availability, end_availability) VALUES (?, ?, ?, ?)', 
-                [tutorId, working_days, start_availability,end_availability  ], (err, availabilityResult) => {
+                [tutorId, working_days, from, to], (err, availabilityResult) => {
                     if (err) {
                         console.error("Error during INSERT into tutor_availability:", err);
                         return res.status(500).json({ error: "Server error" });
