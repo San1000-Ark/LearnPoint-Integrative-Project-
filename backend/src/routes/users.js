@@ -65,11 +65,12 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Ruta para el inicio de sesión
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: "Email and password are required" });
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
     const sql = `
       SELECT u.id, u.name, u.last_name, u.email,
@@ -82,25 +83,45 @@ router.post('/login', async (req, res) => {
     `;
 
     const [rows] = await pool.query(sql, [email, password]);
-    if (rows.length === 0) return res.status(401).json({ message: "Invalid email or password" });
+    if (rows.length === 0) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
 
     const user = rows[0];
+
+    // 👇 Determinar el rol según lo que traiga la BD
     let role = null;
     if (user.studentId) role = "student";
     else if (user.tutorId) role = "tutor";
-    if (!role) return res.status(403).json({ message: "User has no role assigned" });
 
-    res.json({ message: "Login successful", role, user: { id: user.id, name: user.name, last_name: user.last_name, email: user.email } });
+    if (!role) {
+      return res.status(403).json({ message: "User has no role assigned" });
+    }
+
+    // 👇 Aquí añadimos studentId y tutorId al objeto que devolvemos
+    res.json({
+      message: "Login successful",
+      role,
+      user: {
+        id: user.id,
+        name: user.name,
+        last_name: user.last_name,
+        email: user.email,
+        tutorId: user.tutorId || null,
+        studentId: user.studentId || null
+      }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+
 // NUEVA RUTA: Obtener solo estudiantes
 router.get("/role/students", async (req, res) => {
   try {
     const [rows] = await pool.query(`
-      SELECT s.id AS student_id, u.*
+      SELECT s.id AS id, u.name, u.last_name, u.age, u.email, u.password
       FROM students s
       JOIN users u ON s.users_id = u.id
     `);
