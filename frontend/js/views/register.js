@@ -183,9 +183,9 @@ export function initRegister(navigate) {
       const from         = document.getElementById("timeFrom").value;
       const to           = document.getElementById("timeTo").value;
       const working_days_arr = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(d => d.value);
-      const mode_tutoring = "online"; // Puedes cambiar esto según tu lógica de UI
+      const mode_tutoring = "online"; 
 
-      // Validación de disponibilidad
+      // Availability validation
       availabilityError.classList.add("is-hidden");
       if (working_days_arr.length === 0) {
         availabilityError.textContent = "Please select at least one working day.";
