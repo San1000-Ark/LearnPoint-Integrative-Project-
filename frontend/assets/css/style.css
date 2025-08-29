@@ -6,7 +6,7 @@
   --index-color: #312e81;
 }
 
-/* Reset-ish */
+/* ================= GLOBAL RESET ================= */
 * {
   box-sizing: border-box;
 }
@@ -24,7 +24,7 @@ body {
   line-height: 1.6;
 }
 
-/* Navbar & Footer */
+/* ================= NAVBAR & FOOTER ================= */
 .navbar,
 .footer {
   background: var(--background-color);
@@ -56,8 +56,16 @@ body {
   background-color: var(--secondary-color);
 }
 
+.logo-nav {
+  height: 50px;
+}
 
-/* Landing Hero */
+.footer {
+  color: #e5e7eb;
+  margin-top: 40px;
+}
+
+/* ================= HOME ================= */
 .hero {
   position: relative;
   background: linear-gradient(var(--background-color), #ffffff);
@@ -120,16 +128,16 @@ body {
 .about-home {
   width: 60vw;
   height: 30vw;
+}
 
-  & h2 {
-    background-color: var(--index-color);
-    color: white;
-    height: 50px;
-    border-radius: 10px 10px 0% 0%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.about-home h2 {
+  background-color: var(--index-color);
+  color: white;
+  height: 50px;
+  border-radius: 10px 10px 0% 0%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .home-text {
@@ -138,19 +146,15 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-
-  & p {
-    height: 40%;
-    font-size: 1.6rem;
-  }
 }
 
-.has-background{
+.home-text p {
+  height: 40%;
+  font-size: 1.6rem;
+}
+
+.has-background {
   background-color: var(--primary-color);
-}
-
-.logo-nav{
-  height: 50px;
 }
 
 /* Tech cards */
@@ -174,17 +178,17 @@ body {
   justify-content: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: default;
-  
-  & i {
-  font-size: 44px;
- }
+}
 
- & p {
+.card-tech i {
+  font-size: 44px;
+}
+
+.card-tech p {
   margin-top: 8px;
   font-weight: 700;
   font-size: 14px;
   color: #333;
-}
 }
 
 .card-tech:hover {
@@ -192,7 +196,7 @@ body {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Login / Register */
+/* ================= LOGIN / REGISTER ================= */
 .login-page,
 .register-page {
   min-height: 100vh;
@@ -204,17 +208,6 @@ body {
   background-color: var(--primary-color) !important;
   color: #fff;
   box-shadow: 0 6px 15px rgba(97, 126, 255, 0.35);
-}
-
-.register-login{
-  color: white;
-  background-color: var(--background-color);
-  border-radius: 5px;
-  padding: 2px;
-
-  &:hover {
-    color: var(--secondary-color);
-  }
 }
 
 .box.tutor-mode {
@@ -241,7 +234,18 @@ body {
   color: var(--secondary-color) !important;
 }
 
-/* Dashboard */
+.register-login {
+  color: white;
+  background-color: var(--background-color);
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.register-login:hover {
+  color: var(--secondary-color);
+}
+
+/* ================= DASHBOARD ================= */
 .hidden {
   display: none !important;
 }
@@ -254,22 +258,81 @@ body {
   margin-top: 0.25rem;
 }
 
-/* Calendar */
-#calendar {
-  max-width: 1000px;
-  margin: 1.5rem auto;
-}
-
+/* ================= CALENDAR ================= */
+#calendar,
 .calendar-full {
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   min-height: 600px;
-  height: 600px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  padding: 16px;
+  background: var(--primary-color);
 }
 
-/* Chat */
+.fc-button-primary {
+  background-color: var(--secondary-color) !important;
+  border: #b64848 !important;
+
+  &:hover {
+    background-color: #b64848 !important;
+  }
+}
+
+.fc-event {
+  height: 150px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color);
+  color: white;
+  overflow: hidden !important;
+  padding: 1px 2px !important;
+  line-height: 1.2;
+}
+
+.fc-daygrid-event-harness {
+  height: 80px !important;
+}
+
+.fc-event-main{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.fc-event-title {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.fc-event .button {
+  padding: 2px 4px !important;
+  line-height: 1 !important;
+}
+
+.fc-daygrid-event-harness {
+  height: 50px;
+  padding: 2px;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px;
+}
+
+.fc-header-toolbar,
+.fc-view-harness {
+  background: white;
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+/* ================= CHATS ================= */
 .chat-container {
   display: flex;
   height: calc(100vh - 56px);
@@ -333,18 +396,93 @@ body {
   padding: 0.5rem;
 }
 
-/* Footer */
-.footer {
-  color: #e5e7eb;
-  margin-top: 40px;
+/* ================= RESPONSIVE ================= */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .about-home {
+    width: 90vw;
+    height: auto;
+  }
+
+  .home-text p {
+    font-size: 1.2rem;
+    height: auto;
+  }
+
+  .chat-container {
+    flex-direction: column;
+  }
+
+  .contacts {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    max-height: 200px;
+  }
+
+  .chat-box {
+    width: 100%;
+  }
 }
 
-#calendar, .calendar-full{
-  max-width: 90%;
-  margin: 0 auto;
-  padding: 1rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  min-height: 600px; /* 👈 asegura altura */
+/* Mobile */
+@media (max-width: 768px) {
+
+  /* Navbar */
+  .navbar .navbar-end {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Hero Globe responsive */
+  .globe-animation {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero .content-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    padding: 1.5rem;
+  }
+
+  .logo {
+    height: 80px;
+  }
+
+  /* About */
+  .about-home {
+    width: 95vw;
+    height: auto;
+  }
+
+  .home-text {
+    padding: 1rem;
+  }
+
+  .home-text p {
+    font-size: 1rem;
+  }
+
+  /* Tech cards */
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card-tech {
+    width: 120px;
+    height: 120px;
+  }
+
+  /* Calendar */
+  #calendar,
+  .calendar-full {
+    max-width: 100%;
+    min-height: 500px;
+    padding: 0.5rem;
+  }
 }
