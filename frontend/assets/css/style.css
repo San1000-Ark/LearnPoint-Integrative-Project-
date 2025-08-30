@@ -44,6 +44,10 @@ body {
   margin-top: 5px;
 }
 
+.login{
+  background-color: #3273dc;
+}
+
 .login-btn {
   border: 0;
   margin-top: 5px;
@@ -68,9 +72,20 @@ body {
   position: absolute;
   inset: 0;
   margin: auto;
-  width: clamp(320px, 90%, 900px);
-  height: clamp(320px, 90%, 900px);
+  width: 80vw;   /* 80% del ancho de la ventana */
+  height: 80vw;  /* cuadrado proporcional */
+  max-width: 1400px; /* tope por si acaso */
+  max-height: 1400px;
   z-index: 0;
+  opacity: 0.5;
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  justify-content: center;  /* centra horizontal */
+  align-items: center;      /* centra vertical */
+  height: 100vh;            /* ocupa toda la pantalla */
 }
 
 .hero .content-box {
@@ -85,14 +100,15 @@ body {
 }
 
 .hero .content-box .title {
+  margin-top: 30px;
   font-size: clamp(2.2rem, 5vw, 3.5rem);
-  color: #fff;
+  color: #000000;
   font-weight: 800;
 }
 
 .hero .content-box .subtitle {
   font-size: 1.2rem;
-  color: var(--background-color);
+  color: #000000;
   margin-bottom: 1.25rem;
 }
 
@@ -113,31 +129,39 @@ body {
 }
 
 .about-home {
-  width: 60vw;
-  height: 30vw;
-
-  & h2 {
-    background-color: var(--index-color);
-    color: white;
-    height: 50px;
-    border-radius: 10px 10px 0% 0%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 2rem 2.5rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.home-text {
-  height: 80%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+.about-home:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
 
-  & p {
-    height: 40%;
-    font-size: 1.6rem;
-  }
+.about-home h2 {
+  background: linear-gradient(135deg, var(--index-color), #4a90e2);
+  color: #fff;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  display: inline-block;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.about-home .home-text {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #444;
+}
+
+.about-home .home-text p {
+  margin-bottom: 1rem;
 }
 
 /* Tech cards */
@@ -230,6 +254,10 @@ body {
   margin-top: 0.25rem;
 }
 
+#sendBtn{
+  height: 4vh;
+}
+
 /* Calendar */
 #calendar {
   max-width: 1000px;
@@ -298,6 +326,96 @@ body {
 .chat-input {
   border-top: 1px solid #e5e7eb;
   padding: 0.5rem;
+}
+
+/* Contenedor de mensajes */
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+}
+
+/* Burbuja base */
+.message-bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  word-wrap: break-word;
+}
+
+/* Mensajes enviados (derecha, color azul) */
+.message-bubble.sent {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* Mensajes recibidos (izquierda, gris) */
+.message-bubble.received {
+  align-self: flex-start;
+  background-color: #e5e5ea;
+  color: black;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-item {
+  transition: all 0.3s ease;
+  border-left: 4px solid #3273dc;
+}
+
+.chat-item:hover {
+  background-color: #f5f5f5;
+  transform: translateX(5px);
+}
+
+.message {
+  border-radius: 12px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  max-width: 80%;
+}
+
+.message.is-primary {
+  background-color: #3273dc;
+  color: white;
+  margin-left: auto;
+}
+
+.message.is-light {
+  background-color: #f5f5f5;
+  margin-right: auto;
+}
+
+.message.system {
+  background-color: #ffdd57;
+  color: #333;
+  text-align: center;
+  font-style: italic;
+  margin: 10px auto;
+  max-width: 90%;
+}
+
+.chat-item {
+  transition: all 0.3s ease;
+  border-left: 4px solid #3273dc !important;
+}
+
+.chat-item:hover {
+  background-color: #e8f4f8 !important;
+  transform: translateX(5px);
+  border-left: 4px solid #48c774 !important;
+}
+
+.messages {
+  background-color: #fafafa;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.chat-input {
+  margin-top: 15px;
 }
 
 /* Footer */
