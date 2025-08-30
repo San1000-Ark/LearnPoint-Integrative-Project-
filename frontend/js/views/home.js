@@ -24,12 +24,15 @@ export default function home() {
       </div>
     </div>
   </nav>
-
   <!-- Hero / Home -->
   <section class="hero is-fullheight" id="home">
     <div class="hero-body has-text-centered">
       <div class="content-box">
-        <h1 class="title">Welcome to LearnPoint</h1>
+
+        <h1 class="title">Welcome to </h1>
+
+        <img src="./assets/images/logo.png" alt="LearnPoint Logo" class="hero-logo">
+        
         <h2 class="subtitle">Your space to learn and grow</h2>
         <a data-route="register" href="#/register" class="button is-primary">Get Started</a>
       </div>
@@ -38,20 +41,22 @@ export default function home() {
   </section>
 
   <section id="about" class="section has-background-light">
-    <div class="container card has-text-centered about-home">
+    <div class="container about-home">
       <h2 class="title">About Us</h2>
       <div class="home-text">
-      <p class="subtitle">
-        We connect students with passionate tutors so they can learn, build projects, 
-        and grow together in the world of software development.
-      </p>
-      <p class="subtitle">
-        At LearnPoint, we believe in learning by doing. We bring you tutors 
-        that guide you step by step in web, mobile, data, cloud and more.
-      </p>
+        <p class="subtitle">
+          We are a project created by coders from Riwi, with the mission of transforming the way students and tutors connect. At LearnPoint, we believe that learning is not just about studying  it’s about living the experience: sharing, creating, and growing together in the world of software.
+
+          Our platform provides you with an authentic and high-quality connection, where every tutor shares their passion and every student finds the perfect opportunity to boost their future.
+        </p>
+        <p class="subtitle">
+          At LearnPoint, we believe in learning by doing. We bring you tutors 
+          that guide you step by step in web, mobile, data, cloud and more.
+        </p>
       </div> 
     </div>
   </section>
+
 
   <section id="features" class="section has-background-light features-home">
     <div class="container has-text-centered">
