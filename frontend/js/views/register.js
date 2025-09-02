@@ -233,16 +233,16 @@ export function initRegister(navigate) {
       });
       const data = await res.json();
       if (res.ok) {
-        alert("Usuario registrado correctamente");
+        alert("Successfully registered user");
         navigate("login");
       } else {
         showError(
           "registerError",
-          data.message || "Error al registrar usuario."
+          data.message || "Error registering user."
         );
       }
     } catch (err) {
-      showError("registerError", "Error de conexión con el servidor.".err);
+      showError("registerError", "Server connection error.".err);
     }
   });
 
