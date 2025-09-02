@@ -167,7 +167,7 @@ function renderStudentDashboard(studentDbId) {
 
 async function loadStudentChats(studentDbId) {
   try {
-    const res = await fetch(`https://learnpoint-integrative-project-1.onrender.com/requests?student_id=${studentDbId}`);
+    const res = await fetch(`http://localhost:3000/requests?student_id=${studentDbId}`);
     const requests = await res.json();
     const accepted = requests.filter(r => r.status === "accepted");
     renderStudentChats(accepted, studentDbId);
@@ -231,7 +231,7 @@ function renderStudentChats(requests, studentDbId) {
 
 async function loadTutors(studentDbId) {
   try {
-    const res = await fetch("https://learnpoint-integrative-project-1.onrender.com/users/role/tutors");
+    const res = await fetch("http://localhost:3000/users/role/tutors");
     const tutors = await res.json();
     
     // Update stats
@@ -281,7 +281,7 @@ async function loadTutors(studentDbId) {
         const tutor_id = btn.dataset.tutorId;
 
         try {
-          const res = await fetch("https://learnpoint-integrative-project-1.onrender.com/requests", {
+          const res = await fetch("http://localhost:3000/requests", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ student_id, tutor_id })
@@ -360,7 +360,7 @@ function renderTutorDashboard(tutorDbId) {
 
 async function loadRequests(tutorDbId) {
   try {
-    const res = await fetch(`https://learnpoint-integrative-project-1.onrender.com/requests?tutor_id=${tutorDbId}`);
+    const res = await fetch(`http://localhost:3000/requests?tutor_id=${tutorDbId}`);
     const requests = await res.json();
     renderPendingRequests(requests, tutorDbId);
     renderAcceptedRequests(requests);
@@ -466,7 +466,7 @@ function renderAcceptedRequests(requests) {
 
 async function updateRequest(requestId, tutorDbId, status) {
   try {
-    const res = await fetch(`https://learnpoint-integrative-project-1.onrender.com/requests/${requestId}`, {
+    const res = await fetch(`http://localhost:3000/requests/${requestId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ tutor_id: tutorDbId, status })

@@ -9,8 +9,8 @@ The project was developed as an **integrative academic work**, combining **front
 ## 🌍 Deployment  
 
 You can access the deployed project here:  
-👉 [Backend](https://learnpoint-integrative-project-1.onrender.com ) 
-👉 [Frontend](https://learnpoint-integrative-project-1.onrender.com ) 
+👉 [Backend](https://learnpoint-sh7v.onrender.com) 
+👉 [Frontend](https://learn-point-integrative-project.vercel.app/#/home) 
 ---
 
 ## ⚙️ How to Run the Project  
@@ -62,22 +62,21 @@ cd LearnPoint-Integrative-Project
 
 ## 🛠️ Technologies Used  
 
-
 - **Frontend:**  
   - HTML5, CSS3, JavaScript  
   - Lottie Animations (`.json`)  
   - FullCalendar (Core, DayGrid, TimeGrid, Interaction)  
 
 - **Backend:**  
-  - Node.js  
-  - Express.js  
-  - CORS (Cross-Origin Resource Sharing)  
-  - Dotenv (environment variables management)  
-  - Nodemon (development auto-reload)  
-
+  - Node.js **^22.17.0**
+  - Express.js  **^5.1.0**
+  - CORS (Cross-Origin Resource Sharing)  **^2.8.5**
+  - Dotenv (environment variables management)  **^17.2.1**
+  - Nodemon (development auto-reload) **^3.1.10**
+ 
 - **Database:**  
-  - MySQL  
-  - mysql2 (Node.js connector for MySQL)  
+  - MySQL **^8.0.43**
+  - mysql2 (Node.js connector for MySQL) **^3.1.10**
 
 - **Others:**  
   - Git & GitHub for version control 
@@ -96,11 +95,11 @@ cd LearnPoint-Integrative-Project
 ---
 
 ## 🌟 Users
-- **Students**  
+**Students**  
 - juan.perez@example.com   | 12345
 - maria.lopez@example.com  | 123
 
-- **Tutor**  
+**Tutor**  
 - carlos.ramirez@example.com | 2025
 - ana.torres@example.com   | 5656
 - laura.martinez@example.com | 7789
