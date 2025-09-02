@@ -9,8 +9,8 @@ The project was developed as an **integrative academic work**, combining **front
 ## 🌍 Deployment  
 
 You can access the deployed project here:  
-👉 [Backend](https://learnpoint-sh7v.onrender.com) 
-👉 [Frontend](https://learn-point-integrative-project.vercel.app) 
+👉 [Backend]() 
+👉 [Frontend]() 
 ---
 
 ## ⚙️ How to Run the Project  
@@ -95,11 +95,11 @@ cd LearnPoint-Integrative-Project
 ---
 
 ## 🌟 Users
-**Students**  
+**Student**  
 - juan.perez@example.com   | 12345
 - maria.lopez@example.com  | 123
 
-**Tutors**  
+**Tutor**  
 - carlos.ramirez@example.com | 2025
 - ana.torres@example.com   | 5656
 - laura.martinez@example.com | 7789
