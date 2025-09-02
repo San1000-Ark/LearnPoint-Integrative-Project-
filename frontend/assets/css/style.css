@@ -1,0 +1,495 @@
+:root {
+  --primary-color: #617eff;
+  --secondary-color: #f87171;
+  --background-color: #1e1b4b;
+  --text-color: #272727;
+  --index-color: #312e81;
+}
+
+/* ================= GLOBAL RESET ================= */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", system-ui;
+  color: var(--text-color);
+  background-color: #ffffff;
+  line-height: 1.6;
+}
+
+/* ================= NAVBAR & FOOTER ================= */
+.navbar,
+.footer {
+  background: var(--background-color);
+}
+
+.navbar .navbar-item,
+.navbar a.navbar-item {
+  color: #fff !important;
+  font-weight: 600;
+  transition: background 0.25s ease;
+}
+
+.navbar .navbar-item:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 4px;
+  height: 40px;
+  margin-top: 5px;
+}
+
+.login-btn {
+  border: 0;
+  margin-top: 5px;
+  background-color: var(--primary-color) !important;
+}
+
+.register-btn {
+  border: 0;
+  margin: 5px;
+  background-color: var(--secondary-color);
+}
+
+.logo-nav {
+  height: 50px;
+}
+
+.footer {
+  color: #e5e7eb;
+  margin-top: 40px;
+}
+
+/* ================= HOME ================= */
+.hero {
+  position: relative;
+  background: linear-gradient(var(--background-color), #ffffff);
+  overflow: hidden;
+}
+
+.globe-animation {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: clamp(320px, 90%, 900px);
+  height: clamp(320px, 90%, 900px);
+  z-index: 0;
+}
+
+.hero .content-box {
+  position: relative;
+  z-index: 1;
+  background: #ffffff56;
+  border-radius: 24px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  display: inline-block;
+  max-width: 640px;
+  padding: 2rem 2.5rem;
+}
+
+.hero .content-box .title {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  color: #fff;
+  font-weight: 800;
+}
+
+.hero .content-box .subtitle {
+  font-size: 1.2rem;
+  color: var(--background-color);
+  margin-bottom: 1.25rem;
+}
+
+.logo {
+  height: 120px;
+  margin-bottom: 1rem;
+}
+
+.button.is-primary {
+  height: 52px;
+  background-color: var(--index-color);
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0 1.25rem;
+  font-size: 1.1rem;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.button.is-primary:hover {
+  transform: translateY(-2px);
+  background-color: var(--secondary-color);
+}
+
+.about-home {
+  width: 60vw;
+  height: 30vw;
+}
+
+.about-home h2 {
+  background-color: var(--index-color);
+  color: white;
+  height: 50px;
+  border-radius: 10px 10px 0% 0%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-text {
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.home-text p {
+  height: 40%;
+  font-size: 1.6rem;
+}
+
+.has-background {
+  background-color: var(--primary-color);
+}
+
+/* Tech cards */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.25rem;
+  justify-items: center;
+  margin-top: 1.5rem;
+}
+
+.card-tech {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  width: 140px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.card-tech i {
+  font-size: 44px;
+}
+
+.card-tech p {
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #333;
+}
+
+.card-tech:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ================= LOGIN / REGISTER ================= */
+.login-page,
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.box.student-mode {
+  background-color: var(--primary-color) !important;
+  color: #fff;
+  box-shadow: 0 6px 15px rgba(97, 126, 255, 0.35);
+}
+
+.box.tutor-mode {
+  background-color: var(--secondary-color) !important;
+  color: #fff;
+  box-shadow: 0 6px 15px rgba(248, 113, 113, 0.35);
+}
+
+.login-btn-student {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+}
+
+.login-btn-tutor {
+  background-color: var(--secondary-color) !important;
+  color: #fff !important;
+}
+
+.title-student {
+  color: var(--primary-color) !important;
+}
+
+.title-tutor {
+  color: var(--secondary-color) !important;
+}
+
+.register-login {
+  color: white;
+  background-color: var(--background-color);
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.register-login:hover {
+  color: var(--secondary-color);
+}
+
+/* ================= DASHBOARD ================= */
+.hidden {
+  display: none !important;
+}
+
+.stat-card .title {
+  margin-bottom: 0.25rem;
+}
+
+.stat-card .subtitle {
+  margin-top: 0.25rem;
+}
+
+/* ================= CALENDAR ================= */
+#calendar,
+.calendar-full {
+  width: 100%;
+  /* ocupa todo el ancho disponible */
+  max-width: 1200px;
+  /* puedes aumentar este valor si quieres aún más ancho */
+  background: rgb(112, 125, 241);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.fc-button-primary {
+  background-color: var(--secondary-color) !important;
+  border: #b64848 !important;
+
+  &:hover {
+    background-color: #b64848 !important;
+  }
+}
+
+.fc-event {
+  height: 150px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color);
+  color: white;
+  overflow: hidden !important;
+  padding: 1px 2px !important;
+  line-height: 1.2;
+}
+
+.fc-daygrid-event-harness {
+  height: 80px !important;
+}
+
+.fc-event-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.fc-event-title {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.fc-event .button {
+  padding: 2px 4px !important;
+  line-height: 1 !important;
+}
+
+.fc-daygrid-event-harness {
+  height: 50px;
+  padding: 2px;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px;
+}
+
+.fc-header-toolbar,
+.fc-view-harness {
+  background: white;
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+/* ================= CHATS ================= */
+/* ========== CHAT: Burbujas de mensaje estilo moderno ========== */
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  word-wrap: break-word;
+}
+
+.message-bubble.sent {
+  align-self: flex-end;
+  background-color: var(--primary-color);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message-bubble.received {
+  align-self: flex-start;
+  background-color: #e5e5ea;
+  color: black;
+  border-bottom-left-radius: 4px;
+}
+
+.message.system {
+  background-color: #ffdd57;
+  color: #333;
+  text-align: center;
+  font-style: italic;
+  margin: 10px auto;
+  max-width: 90%;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.message.is-primary {
+  background-color: var(--primary-color);
+  color: white;
+  margin-left: auto;
+}
+
+.message.is-light {
+  background-color: #f5f5f5;
+  margin-right: auto;
+}
+
+.chat-item {
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--primary-color) !important;
+}
+
+.chat-item:hover {
+  background-color: #e8f4f8 !important;
+  transform: translateX(5px);
+  border-left: 4px solid #48c774 !important;
+}
+
+.chat-input {
+  margin-top: 15px;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .about-home {
+    width: 90vw;
+    height: auto;
+  }
+
+  .home-text p {
+    font-size: 1.2rem;
+    height: auto;
+  }
+
+  .chat-container {
+    flex-direction: column;
+  }
+
+  .contacts {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    max-height: 200px;
+  }
+
+  .chat-box {
+    width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+  /* Navbar */
+  .navbar .navbar-end {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Hero Globe responsive */
+  .globe-animation {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero .content-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    padding: 1.5rem;
+  }
+
+  .logo {
+    height: 80px;
+  }
+
+  /* About */
+  .about-home {
+    width: 95vw;
+    height: auto;
+  }
+
+  .home-text {
+    padding: 1rem;
+  }
+
+  .home-text p {
+    font-size: 1rem;
+  }
+
+  /* Tech cards */
+  .cards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card-tech {
+    width: 120px;
+    height: 120px;
+  }
+
+  /* Calendar */
+  #calendar,
+  .calendar-full {
+    max-width: 100%;
+    min-height: 500px;
+    padding: 0.5rem;
+  }
+}
