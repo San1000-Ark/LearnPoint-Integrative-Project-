@@ -96,13 +96,14 @@ cd LearnPoint-Integrative-Project
 ---
 
 ## 🌟 Users
+- **Students**  
+- juan.perez@example.com   | 12345
+- maria.lopez@example.com  | 123
 
-- **juan.perez@example.com   | 12345**
-- **maria.lopez@example.com  | 123**
-
-- **carlos.ramirez@example.com | 2025**
-- **ana.torres@example.com   | 5656**
-- **laura.martinez@example.com | 7789**
+- **Tutor**  
+- carlos.ramirez@example.com | 2025
+- ana.torres@example.com   | 5656
+- laura.martinez@example.com | 7789
 
 ---
 

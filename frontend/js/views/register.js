@@ -223,8 +223,8 @@ export function initRegister(navigate) {
 
       const url =
         mode === "tutor"
-          ? "http://localhost:3000/registerB/registerTutor"
-          : "http://localhost:3000/registerB/registerStudent";
+          ? "https://learnpoint-integrative-project-1.onrender.com/registerB/registerTutor"
+          : "https://learnpoint-integrative-project-1.onrender.com/registerB/registerStudent";
 
       const res = await fetch(url, {
         method: "POST",
