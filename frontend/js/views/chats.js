@@ -82,7 +82,7 @@ export function chats() {
   `;
 }
 
-// ================== INICIALIZACIÓN ==================
+//INICIALIZACIÓN
 export function initChats(navigate) {
   const user = auth.getUser();
   const currentUserId = user?.id;
@@ -130,7 +130,7 @@ export function initChats(navigate) {
   });
 }
 
-// ================== FUNCIONES AUXILIARES ==================
+// FUNCIONES AUXILIARES
 async function loadUserChats(currentUserId) {
   try {
     const contactsDiv = document.getElementById("contacts");
@@ -337,3 +337,4 @@ async function loadSpecificChat(tutorUserId, studentUserId, currentUserId) {
   // In this line don´t call loadUserChats
   loadUserChats(currentUserId);
 }
+
