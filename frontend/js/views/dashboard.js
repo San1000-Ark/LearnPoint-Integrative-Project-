@@ -118,9 +118,7 @@ export function initDashboard(navigate) {
   `;
 }
 
-// ---------------------
-// STUDENT DASHBOARD
-// ---------------------
+// Studen dashboard
 
 function renderStudentDashboard(studentDbId) {
   const content = document.getElementById("contentDashboard");
@@ -179,7 +177,7 @@ async function loadStudentChats(studentDbId) {
 function renderStudentChats(requests, studentDbId) {
   const container = document.getElementById("activeChats");
 
-  //  Clean before
+  //  limpiar antes
   container.innerHTML = "";
 
   // Update stats
@@ -220,7 +218,7 @@ function renderStudentChats(requests, studentDbId) {
 
   container.querySelectorAll(".goToChatBtn").forEach(btn => {
     btn.addEventListener("click", () => {
-      // Save the role id (tutorId and studentId) for the chat
+      // Guardar el id de rol (tutorId y studentId) para el chat
       localStorage.setItem("activeChatTutorId", btn.dataset.tutorUserId);
       localStorage.setItem("activeChatStudentId", btn.dataset.studentUserId);
 
@@ -237,7 +235,7 @@ async function loadTutors(studentDbId) {
     // Update stats
     document.getElementById("available-tutors-count").textContent = tutors.length;
     const list = document.getElementById("tutorsList");
-    // Clean before
+    //  limpiar antes
     list.innerHTML = "";
 
     if (tutors.length === 0) {
@@ -311,9 +309,7 @@ async function loadTutors(studentDbId) {
   }
 }
 
-// ---------------------
-// TUTOR DASHBOARD
-// ---------------------
+// TUtor dashboard.
 
 function renderTutorDashboard(tutorDbId) {
   const content = document.getElementById("contentDashboard");
@@ -425,13 +421,25 @@ function renderPendingRequests(requests, tutorDbId) {
 function renderAcceptedRequests(requests) {
   const container = document.getElementById("acceptedRequests");
   const accepted = requests.filter(r => r.status === "accepted");
-    container.innerHTML = "";
+  
+  // Filtrar requests únicos por estudiante para evitar duplicados
+  const uniqueAccepted = [];
+  const seenStudents = new Set();
+  
+  accepted.forEach(req => {
+    if (!seenStudents.has(req.student_user_id)) {
+      seenStudents.add(req.student_user_id);
+      uniqueAccepted.push(req);
+    }
+  });
+  
+  container.innerHTML = "";
 
   // Update stats and badges
-  document.getElementById("accepted-requests-count").textContent = accepted.length;
-  document.getElementById("accepted-badge").textContent = `${accepted.length} active`;
+  document.getElementById("accepted-requests-count").textContent = uniqueAccepted.length;
+  document.getElementById("accepted-badge").textContent = `${uniqueAccepted.length} active`;
   
-  if (accepted.length === 0) {
+  if (uniqueAccepted.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
         <i class="fas fa-user-graduate"></i>
@@ -442,7 +450,7 @@ function renderAcceptedRequests(requests) {
     return;
   }
 
-  accepted.forEach(req => {
+  uniqueAccepted.forEach(req => {
     const div = document.createElement("div");
     div.classList.add("request-item");
     div.innerHTML = `
@@ -482,13 +490,13 @@ async function updateRequest(requestId, tutorDbId, status) {
     }
 
     if (status === "accepted") {
-      // Use the role IDs (tutor_db_id and student_db_id) to create the chat
+      // Usar los IDs de rol (tutor_db_id y student_db_id) para crear el chat
       const { student_user_id, tutor_user_id, student_name, student_last_name, tutor_name, tutor_last_name } = data;;
       if (!student_user_id || !tutor_user_id) {
         throw new Error("Missing role IDs from database. Check backend response.");
       }
       
-      console.log("🟢 Calling createChat with:", {
+      console.log("🟢 Llamando a createChat con:", {
         tutor_user_id,
         student_user_id,
         tutor_name,
