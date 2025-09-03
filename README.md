@@ -9,8 +9,9 @@ The project was developed as an **integrative academic work**, combining **front
 ## 🌍 Deployment  
 
 You can access the deployed project here:  
-👉 [Backend](https://learnpoint-integrative-project-1.onrender.com ) 
-👉 [Frontend](https://learnpoint-integrative-project-1.onrender.com ) 
+- 👉 [Backend](https://learnpoint-sh7v.onrender.com) 
+
+- 👉 [Frontend](https://learn-point-integrative-project.vercel.app) 
 ---
 
 ## ⚙️ How to Run the Project  
@@ -69,18 +70,18 @@ cd LearnPoint-Integrative-Project
   - FullCalendar (Core, DayGrid, TimeGrid, Interaction)  
 
 - **Backend:**  
-  - Node.js  
-  - Express.js ^5.1.0
-  - CORS (Cross-Origin Resource Sharing) ^2.8.5  
-  - Dotenv (environment variables management)  ^17.2.1
-  - Nodemon (development auto-reload) ^3.1.10
+  - Node.js **^v22.17.0**
+  - Express.js **^5.1.0**
+  - CORS (Cross-Origin Resource Sharing) **^2.8.5**
+  - Dotenv (environment variables management) **^17.2.1**
+  - Nodemon (development auto-reload) **^3.1.10**
 
 - **Database:**  
-  - MySQL  
-  - mysql2 (Node.js connector for MySQL)  ^3.14.3
+  - MySQL  **^8.0.43**
+  - mysql2 (Node.js connector for MySQL) **^3.14.3**
 
 - **Others:**  
-  - Git & GitHub for version control 
+  - Git & GitHub for version control **^2.43.0**
 
 ---
 
@@ -121,4 +122,3 @@ cd LearnPoint-Integrative-Project
 ## 📌 Version  
 
 - **Version 1.0.0** – Initial integrative project release  
-
