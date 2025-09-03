@@ -80,7 +80,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ACCEPT / REJECT REQUEST
+// ACCEPT REJECT REQUEST
 
 router.put("/:id", async (req, res) => {
   try {
@@ -93,8 +93,8 @@ router.put("/:id", async (req, res) => {
     // Obtain the application and validate the tutor
     const [rows] = await pool.query(
       `SELECT r.*, 
-              s.id AS student_db_id,          -- ← Changed: id de students
-              t.id AS tutor_db_id,            -- ← Changed: id de tutors
+              s.id AS student_db_id,          -- ← Changed: id of students
+              t.id AS tutor_db_id,            -- ← Changed: id of tutors
               s.users_id AS student_user_id, 
               t.users_id AS tutor_user_id,
               su.name AS student_name,

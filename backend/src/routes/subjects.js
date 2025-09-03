@@ -9,10 +9,10 @@ router.get("/", async (req, res) => {
     const [rows] = await db.query(
       "SELECT id, subject_name FROM subjects ORDER BY subject_name"
     );
-    console.log("📖 Subjects fetched:", rows);
+    console.log("Subjects fetched:", rows);
     res.json(rows);
   } catch (err) {
-    console.error("❌ Error getting subjects:", err);
+    console.error("Error getting subjects:", err);
     res.status(500).json({ error: "Error getting subjects" });
   }
 });

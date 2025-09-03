@@ -9,6 +9,7 @@ function formatTime(dateString) {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+// ================== HTML VIEW ==================
 export function chats() {
   return `
 <div class="dashboard-layout">
@@ -82,7 +83,7 @@ export function chats() {
   `;
 }
 
-//INICIALIZACIÓN
+// ================== INITIALIZATION ==================
 export function initChats(navigate) {
   const user = auth.getUser();
   const currentUserId = user?.id;
@@ -90,7 +91,7 @@ export function initChats(navigate) {
 
   console.log("🔑 User info (auth):", { currentUserId, currentUserRole });
 
-  // Limpiar listeners previos
+  // Clear previous listeners
   if (window.currentChatsUnsubscribe) {
     window.currentChatsUnsubscribe();
     window.currentChatsUnsubscribe = null;
@@ -130,7 +131,7 @@ export function initChats(navigate) {
   });
 }
 
-// FUNCIONES AUXILIARES
+// ================== AUXILIARY FUNCTIONS ==================
 async function loadUserChats(currentUserId) {
   try {
     const contactsDiv = document.getElementById("contacts");
@@ -161,26 +162,13 @@ async function renderChats(chats, currentUserId) {
   const contactsDiv = document.getElementById("contacts");
   contactsDiv.innerHTML = "";
 
-  // Crear un mapa para eliminar duplicados basado en el otro participante
-  const uniqueChatsMap = new Map();
-  
-  chats.forEach(chat => {
-    const otherId = chat.participants.find(id => id !== String(currentUserId));
-    if (otherId && !uniqueChatsMap.has(otherId)) {
-      uniqueChatsMap.set(otherId, chat);
-    } else if (otherId && uniqueChatsMap.has(otherId)) {
-      // Si ya existe un chat con esta persona, mantener el más reciente
-      const existingChat = uniqueChatsMap.get(otherId);
-      const currentChatTime = chat.lastUpdated?.toDate?.() || new Date(chat.lastUpdated || 0);
-      const existingChatTime = existingChat.lastUpdated?.toDate?.() || new Date(existingChat.lastUpdated || 0);
-      
-      if (currentChatTime > existingChatTime) {
-        uniqueChatsMap.set(otherId, chat);
-      }
-    }
+  const seen = new Set();
+  const uniqueChats = chats.filter(chat => {
+    const key = [...chat.participants].sort().join("_");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
   });
-  
-  const uniqueChats = Array.from(uniqueChatsMap.values());
 
   if (uniqueChats.length === 0) {
     contactsDiv.innerHTML = `<div class="notification is-info">
@@ -255,7 +243,7 @@ function loadMessages(chatId) {
     snapshot.forEach((doc) => {
       const msg = doc.data();
 
-      // ✅ convertir la fecha (Firestore Timestamp -> Date)
+      // Convert the date (Firestore Timestamp -> Date)
       let time = "";
       if (msg.createdAt) {
         const date = msg.createdAt.toDate ? msg.createdAt.toDate() : new Date(msg.createdAt);
@@ -274,7 +262,7 @@ function loadMessages(chatId) {
       msgDiv.style.marginLeft =
         msg.sender === String(auth.getUser()?.id) ? "auto" : "0";
 
-      // ✅ mostrar texto + hora
+      // Show text + time
       msgDiv.innerHTML = `
         <p>${msg.text}</p>
         <span class="has-text-grey is-size-7" style="display:block; text-align:right; margin-top:4px;">
@@ -288,7 +276,6 @@ function loadMessages(chatId) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   });
 }
-
 
 async function sendMessage() {
   const input = document.getElementById("chatInput");
@@ -306,7 +293,7 @@ async function sendMessage() {
   input.value = "";
 }
 
-// Crear chat
+// Create chat
 export async function createChat(tutorUserId, studentUserId, tutorName, studentName) {
   const chatId = [String(tutorUserId), String(studentUserId)].sort().join("_");
   const chatRef = doc(db, "chats", chatId);
@@ -334,7 +321,6 @@ async function loadSpecificChat(tutorUserId, studentUserId, currentUserId) {
     document.getElementById("chatHeader").innerHTML = `<h3 class="title is-6">Chat con ${username}</h3>`;
     document.getElementById("chatInputContainer").style.display = "block";
   }
-  // In this line don´t call loadUserChats
+  // We do NOT call loadUserChats() again here to avoid duplicates.
   loadUserChats(currentUserId);
 }
-

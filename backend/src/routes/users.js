@@ -151,7 +151,7 @@ router.get("/role/students", async (req, res) => {
       }))
     );
   } catch (err) {
-    console.error("❌ Error getting students:", err);
+    console.error("Error getting students:", err);
     res.status(500).json({ error: "Error getting students" });
   }
 });

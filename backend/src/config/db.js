@@ -20,9 +20,9 @@ const pool = mysql.createPool({
     const conn = await pool.getConnection();
     await conn.ping();
     conn.release();
-    console.log("✅ MySQL connected");
+    console.log("MySQL connected");
   } catch (err) {
-    console.error("❌ MySQL connection error:", err.message);
+    console.error("MySQL connection error:", err.message);
   }
 })();
 

@@ -44,14 +44,14 @@ router.get("/events", async (req, res) => {
       values.push(userId);
     }
 
-    console.log("🔍 SQL Query:", sql);
-    console.log("🔍 Values:", values);
+    console.log("SQL Query:", sql);
+    console.log("Values:", values);
 
     const [rows] = await db.query(sql, values);
-    console.log("📅 Events fetched:", rows);
+    console.log("Events fetched:", rows);
     res.json(rows);
   } catch (err) {
-    console.error("❌ Error getting events:", err);
+    console.error("Error getting events:", err);
     res.status(500).json({ error: "Error getting events" });
   }
 });
@@ -64,7 +64,7 @@ router.get("/events", async (req, res) => {
  */
 router.post("/events", async (req, res) => {
   try {
-    console.log("📥 Body received:", req.body);
+    console.log("Body received:", req.body);
 
     const {
       start_datetime,
@@ -92,10 +92,10 @@ router.post("/events", async (req, res) => {
       ]
     );
 
-    console.log("✅ Tutoring session created with ID:", result.insertId);
+    console.log("Tutoring session created with ID:", result.insertId);
     res.json({ success: true, id: result.insertId });
   } catch (err) {
-    console.error("❌ Error creating event:", err);
+    console.error("Error creating event:", err);
     res.status(500).json({ error: "Error creating event" });
   }
 });
@@ -130,10 +130,10 @@ router.put("/events/:id", async (req, res) => {
       ]
     );
 
-    console.log("✅ Tutoring session updated:", id);
+    console.log("Tutoring session updated:", id);
     res.json({ success: true });
   } catch (err) {
-    console.error("❌ Error editing event:", err);
+    console.error("Error editing event:", err);
     res.status(500).json({ error: "Error editing event" });
   }
 });
@@ -149,10 +149,10 @@ router.delete("/events/:id", async (req, res) => {
 
     await db.query(`DELETE FROM reservation WHERE id = ?`, [id]);
 
-    console.log("🗑️ Tutoring session deleted:", id);
+    console.log("Tutoring session deleted:", id);
     res.json({ success: true });
   } catch (err) {
-    console.error("❌ Error deleting event:", err);
+    console.error("Error deleting event:", err);
     res.status(500).json({ error: "Error deleting event" });
   }
 });
