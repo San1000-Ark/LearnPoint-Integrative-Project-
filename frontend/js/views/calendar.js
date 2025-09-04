@@ -294,7 +294,7 @@ export async function initCalendar() {
     events: async (fetchInfo, successCallback, failureCallback) => {
       try {
         const res = await fetch(
-          `http://localhost:3000/calendar/events?userId=${
+          `https://backend-1-x71e.onrender.com/calendar/events?userId=${
             user.role === "tutor" ? user.tutorId : user.studentId
           }&role=${user.role}`
         );
@@ -400,7 +400,7 @@ export async function initCalendar() {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/calendar/events", {
+      const res = await fetch("https://backend-1-x71e.onrender.com/calendar/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -474,7 +474,7 @@ export async function initCalendar() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/calendar/events/${event.id}`,
+        `https://backend-1-x71e.onrender.com/calendar/events/${event.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -495,7 +495,7 @@ export async function initCalendar() {
   async function deleteTutoria(eventId) {
     try {
       const res = await fetch(
-        `http://localhost:3000/calendar/events/${eventId}`,
+        `https://backend-1-x71e.onrender.com/calendar/events/${eventId}`,
         { method: "DELETE" }
       );
       if (!res.ok) throw new Error("Error deleting tutoring session");
@@ -509,7 +509,7 @@ export async function initCalendar() {
 
   async function fetchStudents() {
     try {
-      const res = await fetch("http://localhost:3000/users/role/students");
+      const res = await fetch("https://backend-1-x71e.onrender.com/users/role/students");
       if (!res.ok) throw new Error("Error getting students");
       const students = await res.json();
       console.log("📚 Students loaded:", students);
@@ -523,7 +523,7 @@ export async function initCalendar() {
 
   async function fetchSubjects() {
     try {
-      const res = await fetch("http://localhost:3000/subjects");
+      const res = await fetch("https://backend-1-x71e.onrender.com/subjects");
       if (!res.ok) throw new Error("Error getting subjects");
       const subjects = await res.json();
       console.log("📖 Subjects loaded:", subjects);

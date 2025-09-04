@@ -219,7 +219,7 @@ async function renderChats(chats, currentUserId) {
 
 async function getUsernameById(userId) {
   try {
-    const res = await fetch(`http://localhost:3000/users/${userId}`);
+    const res = await fetch(`https://backend-1-x71e.onrender.com/users/${userId}`);
     const data = await res.json();
     return `${data.name} ${data.last_name}` || "Usuario desconocido";
   } catch {
