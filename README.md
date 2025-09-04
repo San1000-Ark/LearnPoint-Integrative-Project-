@@ -9,9 +9,9 @@ The project was developed as an **integrative academic work**, combining **front
 ## 🌍 Deployment  
 
 You can access the deployed project here:  
-- 👉 [Backend](https://learnpoint-sh7v.onrender.com) 
+- 👉 [Backend](https://backend-1-x71e.onrender.com) 
 
-- 👉 [Frontend](https://learn-point-integrative-project.vercel.app) 
+- 👉 [Frontend](https://frontend-zbgc.onrender.com) 
 ---
 
 ## ⚙️ How to Run the Project  
